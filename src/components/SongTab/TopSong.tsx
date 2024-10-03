@@ -45,12 +45,12 @@ const TopSong = () => {
           >
             Video
           </button>
-          <button
+          {/* <button
             type="button"
             className="w-fit h-9 lg:h-11 xl:h-11 px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl bg-buttonDisable border border-btnGradientFrom text-white font-medium hover:font-bold"
           >
             Movie
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="flex flex-col-reverse lg:flex-row py-4">

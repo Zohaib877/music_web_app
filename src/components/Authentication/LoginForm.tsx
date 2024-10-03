@@ -23,7 +23,6 @@ const LoginForm: React.FC = () => {
       setShowOtpField(true);
     } else if (showOtpField && otp) {
       dispatch(loginUser({ phoneNumber, otp }));
-      alert("OTP verified and user logged in!");
       router.push("/");
     }
   };
