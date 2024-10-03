@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* globals.css or any other global stylesheet */
+@font-face {
+  font-family: 'Outfit';
+  src: url('../../public/assets/font/outfit/OutfitRegular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('../../public/assets/font/outfit/OutfitMedium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('../../public/assets/font/outfit/OutfitSemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('../../public/assets/font/outfit/OutfitBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #000000;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #600D62;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(#CF0056, #600D62);
+}
+
+/* html, */
+body {
+  margin: 0;
+  background-color: #131418;
+  background-image: url('../../public/assets/images/background/music_bg.png');
+  background-size: 350px;
+  background-repeat: repeat;
+  overflow-x: hidden;
+  background-attachment: fixed;
+}
+
+body:before{
+  pointer-events: none;
+  content: '';
+  position: fixed;
+  top: 0;
+  right: -100px;
+  height: 900px;
+  aspect-ratio: 1 / 1;
+  background-image: url('../../public/assets/images/background/Ellipse_top_right.png'); 
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: top right;
+  z-index: -10;
+}
+body::after{
+  pointer-events: none;
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: -100px;
+  height: 900px;
+  aspect-ratio: 1 / 1;
+  background-image: url('../../public/assets/images/background/Ellipse_bottom_left.png'); 
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  z-index: -10;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  body:before {
+    height: 800px;
+    z-index: -10;
+  }
+  
+  body::after {
+    height: 800px;
+    z-index: -10;
+  }
+}
+
+@media (max-width: 992px) {
+  body:before {
+    height: 800px;
+    right: -90px;
+    background-size: 100%;
+    z-index: -10;
+  }
+  
+  body::after {
+    height: 800px;
+    left: -90px;
+    background-size: 100%;
+    z-index: -10;
+  }
+}
+
+@media (max-width: 768px) {
+  body:before {
+    height: 650px;
+    right: -50px;
+    background-size: 100%;
+    z-index: -10;
+  }
+  
+  body::after {
+    height: 650px;
+    left: -50px;
+    background-size: 100%;
+    z-index: -10;
+  }
+}
+
+@media (max-width: 576px) {
+  body:before {
+    height: 500px;
+    right: -50px;
+    background-size: 100%;
+    z-index: -10;
+  }
+  
+  body::after {
+    height: 500px;
+    left: -50px;
+    background-size: 100%;
+    z-index: -10;
+  }
+}
+
+@media (max-width: 400px) {
+  body:before {
+    height: 500px;
+    right: -50px;
+    background-size: 100%;
+    z-index: -10;
+  }
+  
+  body::after {
+    height: 500px;
+    left: -50px;
+    background-size: 100%;
+    z-index: -10;
+  }
+}
+
+/* Slider  */
+
+/* Customizing slick dots */
+.custom-slider .slick-dots li button:before {
+  font-size: 12px;
+  color: #888888; /* Set dot color to white */
+  opacity: 1; /* Full opacity for better visibility */
+}
+
+.custom-slider .slick-dots li.slick-active button:before {
+  color: white; /* Ensure active dot is also white */
+  opacity: 1;
+}
+
+/* styles/globals.css */
+.range-slider {
+  -webkit-appearance: none; /* Remove default appearance */
+  width: 100%;
+  height: 8px; /* Track height */
+  background: transparent; /* Transparent background */
+  cursor: pointer;
+  outline: none;
+}
+
+.range-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: transparent;
+  /* Custom appearance handled in JSX inline styles */
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #CF0056; /* Thumb color (Tailwind pink-500) */
+  cursor: pointer;
+  margin-top: -6px; /* Align thumb with track */
+}
+
+.range-slider::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: transparent;
+}
+
+.range-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #CF0056; /* Thumb color (Tailwind pink-500) */
+  cursor: pointer;
+}
