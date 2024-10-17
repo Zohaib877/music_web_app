@@ -4,29 +4,32 @@
 
 /* globals.css or any other global stylesheet */
 @font-face {
-  font-family: 'Outfit';
-  src: url('../../public/assets/font/outfit/OutfitRegular.ttf') format('truetype');
+  font-family: "Outfit";
+  src: url("../../public/assets/font/outfit/OutfitRegular.ttf")
+    format("truetype");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Outfit';
-  src: url('../../public/assets/font/outfit/OutfitMedium.ttf') format('truetype');
+  font-family: "Outfit";
+  src: url("../../public/assets/font/outfit/OutfitMedium.ttf")
+    format("truetype");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Outfit';
-  src: url('../../public/assets/font/outfit/OutfitSemiBold.ttf') format('truetype');
+  font-family: "Outfit";
+  src: url("../../public/assets/font/outfit/OutfitSemiBold.ttf")
+    format("truetype");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Outfit';
-  src: url('../../public/assets/font/outfit/OutfitBold.ttf') format('truetype');
+  font-family: "Outfit";
+  src: url("../../public/assets/font/outfit/OutfitBold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }
@@ -44,49 +47,49 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #600D62;
+  background: #600d62;
   border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(#CF0056, #600D62);
+  background: linear-gradient(#cf0056, #600d62);
 }
 
 /* html, */
 body {
   margin: 0;
   background-color: #131418;
-  background-image: url('../../public/assets/images/background/music_bg.png');
+  background-image: url("../../public/assets/images/background/music_bg.png");
   background-size: 350px;
   background-repeat: repeat;
   overflow-x: hidden;
   background-attachment: fixed;
 }
 
-body:before{
+body:before {
   pointer-events: none;
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   right: -100px;
   height: 900px;
   aspect-ratio: 1 / 1;
-  background-image: url('../../public/assets/images/background/Ellipse_top_right.png'); 
+  background-image: url("../../public/assets/images/background/Ellipse_top_right.png");
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: top right;
   z-index: -10;
 }
-body::after{
+body::after {
   pointer-events: none;
-  content: '';
+  content: "";
   position: fixed;
   bottom: 0;
   left: -100px;
   height: 900px;
   aspect-ratio: 1 / 1;
-  background-image: url('../../public/assets/images/background/Ellipse_bottom_left.png'); 
+  background-image: url("../../public/assets/images/background/Ellipse_bottom_left.png");
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: bottom left;
@@ -99,7 +102,7 @@ body::after{
     height: 800px;
     z-index: -10;
   }
-  
+
   body::after {
     height: 800px;
     z-index: -10;
@@ -113,7 +116,7 @@ body::after{
     background-size: 100%;
     z-index: -10;
   }
-  
+
   body::after {
     height: 800px;
     left: -90px;
@@ -129,7 +132,7 @@ body::after{
     background-size: 100%;
     z-index: -10;
   }
-  
+
   body::after {
     height: 650px;
     left: -50px;
@@ -145,7 +148,7 @@ body::after{
     background-size: 100%;
     z-index: -10;
   }
-  
+
   body::after {
     height: 500px;
     left: -50px;
@@ -161,7 +164,7 @@ body::after{
     background-size: 100%;
     z-index: -10;
   }
-  
+
   body::after {
     height: 500px;
     left: -50px;
@@ -207,7 +210,7 @@ body::after{
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #CF0056; /* Thumb color (Tailwind pink-500) */
+  background: #cf0056; /* Thumb color (Tailwind pink-500) */
   cursor: pointer;
   margin-top: -6px; /* Align thumb with track */
 }
@@ -222,6 +225,6 @@ body::after{
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #CF0056; /* Thumb color (Tailwind pink-500) */
+  background: #cf0056; /* Thumb color (Tailwind pink-500) */
   cursor: pointer;
 }

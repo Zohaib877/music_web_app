@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/lib/features/User/userSlice";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/lib/store";
+import Image from "next/image";
 
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
@@ -33,12 +34,17 @@ const LoginForm: React.FC = () => {
   }, [isLoggedIn, router]);
   return (
     <>
-      <div className="hidden max-sm:flex flex-col justify-center items-center">
-        <p className="hidden max-sm:block text-borderPrimary font-semibold text-xl mt-20">
-          Music App name and logo
-        </p>
+      <div className="hidden max-sm:flex flex-col justify-center items-center mt-3">
+        <div className="relative w-40 h-40 sm:w-40 sm:h-40">
+          <Image
+            src={require("../../../public/assets/images/brand/Logo.png")}
+            alt="Music App Logo"
+            fill
+            style={{ objectFit: "contain" }}
+          />
+        </div>
         <h1 className="text-white text-3xl font-bold mt-14">Welcome To</h1>
-        <p className="text-borderPrimary font-light text-xl">Music App</p>
+        <p className="text-borderPrimary font-light text-xl">Dhun</p>
       </div>
       <h2 className="text-white font-thin max-sm:text-xl text-2xl mb-6 max-sm:mt-5 mt-32">
         Login to your account
@@ -47,14 +53,14 @@ const LoginForm: React.FC = () => {
         onSubmit={handleSubmit}
         className="w-full flex items-center flex-col"
       >
-        <div className="h-max py-2 bg-cardDisabled rounded-lg w-full divide-y px-4">
-          <div className="my-2 w-full">
+        <div className="h-max py-2 bg-cardDisabled/50 rounded-lg w-full divide-y px-4 opacity-95">
+          <div className=" w-full">
             <input
               type="tel"
               placeholder="Phone Number"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full px-4 pb-2 pt-3 bg-transparent focus:outline-none focus:border-none text-white text-left"
+              className="w-full px-1 pb-2 pt-3 bg-transparent focus:outline-none focus:border-none text-white text-left"
             />
           </div>
           {showOtpField && (
@@ -62,14 +68,15 @@ const LoginForm: React.FC = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="my-2 w-full"
+              className="w-full"
             >
               <input
                 type="text"
                 placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full px-4 pb-2 pt-3 bg-transparent focus:outline-none focus:border-none text-white text-left"
+                className="w-full px-1 pb-2 pt-3 bg-transparent focus:outline-none focus:border-none text-white text-left"
+                maxLength={6}
               />
             </motion.div>
           )}

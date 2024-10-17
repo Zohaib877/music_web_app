@@ -6,8 +6,8 @@ import StoreProvider from "./StoreProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Music App",
-  description: "Music app",
+  title: "Dhun",
+  description: "Dhun",
 };
 
 export default function RootLayout({
@@ -17,10 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+      </head>
       <body className={inter.className}>
-        <StoreProvider>
-          {children}
-        </StoreProvider>
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
   );

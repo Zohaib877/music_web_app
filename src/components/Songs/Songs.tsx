@@ -115,7 +115,7 @@ const Songs: React.FC<SongsProps> = ({
   return (
     <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly">
       {heading && (
-        <div className="flex justify-between items-center py-5 px-4">
+        <div className="flex justify-between items-center px-4">
           <h3 className={`text-fontPrimary text-2xl`}>{heading}</h3>
           {link && (
             <Link
@@ -128,7 +128,7 @@ const Songs: React.FC<SongsProps> = ({
         </div>
       )}
 
-      <div className={`${type != 2 ? `py-6 mb-9` : ``}`}>
+      <div className={`${type != 2 ? `py-1 mb-9` : ``}`}>
         <Slider {...settings} className="custom-slider">
           {slides.map((item, index) => (
             <div

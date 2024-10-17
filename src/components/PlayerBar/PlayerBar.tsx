@@ -20,26 +20,24 @@ const PlayerBar = () => {
   const [isBigScreen, setIsBigScreen] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
-
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isDropdownAbove, setIsDropdownAbove] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dotsButtonRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Use useEffect to handle client-side only logic
+  // Handle screen resizing
   useEffect(() => {
     const handleResize = () => {
       setIsBigScreen(window.innerWidth >= 1024);
     };
 
-    // Set initial value
     handleResize();
-
-    // Add event listener for resize
     window.addEventListener("resize", handleResize);
 
-    // Cleanup event listener
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Function to handle range slider change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     setValue(value);
@@ -47,8 +45,24 @@ const PlayerBar = () => {
       audioRef.current.currentTime = (value / 100) * duration;
     }
   };
+  useEffect(() => {
+    if (isDropdownOpen && dotsButtonRef.current && dropdownRef.current) {
+      const buttonRect = dotsButtonRef.current.getBoundingClientRect();
+      const dropdownRect = dropdownRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
 
-  // Toggle play and pause
+      // Check if there's more space above or below the button
+      if (
+        spaceBelow < dropdownRect.height &&
+        spaceAbove > dropdownRect.height
+      ) {
+        setIsDropdownAbove(true);
+      } else {
+        setIsDropdownAbove(false);
+      }
+    }
+  }, [isDropdownOpen]);
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -60,7 +74,6 @@ const PlayerBar = () => {
     }
   };
 
-  // Handle time update from the audio element
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       const currentTime = audioRef.current.currentTime;
@@ -70,11 +83,14 @@ const PlayerBar = () => {
     }
   };
 
-  // Load metadata for the audio duration
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
     }
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
@@ -179,8 +195,36 @@ const PlayerBar = () => {
             <FaHeart />
           </div>
           {isBigScreen && (
-            <div className="text-fontPrimary text-xl">
-              <HiOutlineDotsVertical />
+            <div className="relative" ref={dotsButtonRef}>
+              <div
+                onClick={toggleDropdown}
+                className="cursor-pointer text-fontPrimary text-xl"
+              >
+                <HiOutlineDotsVertical />
+              </div>
+              {isDropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className={`absolute right-0 w-40 bg-white divide-y divide-gray-100  dark:bg-gray-700 dark:divide-gray-600 shadow-lg rounded-md z-50 ${
+                    isDropdownAbove ? "bottom-full mb-2" : "top-full mt-2"
+                  }`}
+                >
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                    aria-labelledby="avatarButton"
+                  >
+                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                      Add to Playlist
+                    </li>
+                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                      Favorite
+                    </li>
+                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                      Share
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           )}
           <div

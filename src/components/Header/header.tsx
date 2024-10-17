@@ -36,19 +36,23 @@ const Header = () => {
             height={35}
             onClick={() => dispatch(openSidebar())}
           />
-          <h1
-            className="text-fontPrimary text-sm lg:text-4xl cursor-pointer w-fit pl-4 lg:px-0 xl:px-0"
-            onClick={() => router.push("/")}
-          >
-            Music App
-          </h1>
+          <div className="relative w-10 h-10 sm:w-10 sm:h-10">
+            <Image
+              src={require("../../../public/assets/images/brand/Logo.png")}
+              alt="Music App Logo"
+              fill
+              style={{ objectFit: "contain" }}
+            />
+          </div>
         </div>
-        <p
-          className="text-fontPrimary text-xl lg:text-2xl cursor-pointer w-fit pl-4 lg:px-0 xl:px-0 hidden lg:block xl:block"
-          onClick={() => router.push("/")}
-        >
-          Music App
-        </p>
+        {/* <div className="relative w-20 h-20 sm:w-20 sm:h-20">
+          <Image
+            src={require("../../../public/assets/images/brand/Logo.png")}
+            alt="Music App Logo"
+            fill
+            style={{ objectFit: "contain" }}
+          />
+        </div> */}
         {/* search Input start */}
         <div className="hidden lg:grow lg:flex lg:justify-center">
           <div className="w-4/5">

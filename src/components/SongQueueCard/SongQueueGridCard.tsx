@@ -22,7 +22,7 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
 
   return (
     <div
-      className={`relative h-auto rounded-lg shadow-lg transition-transform transform overflow-hidden ${
+      className={`relative h-52 rounded-lg shadow-lg transition-transform transform overflow-hidden ${
         isOpen ? "bg-gray-800" : "bg-gray-700"
       } hover:scale-105 my-2`}
       style={{

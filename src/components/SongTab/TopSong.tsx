@@ -45,16 +45,10 @@ const TopSong = () => {
           >
             Video
           </button>
-          {/* <button
-            type="button"
-            className="w-fit h-9 lg:h-11 xl:h-11 px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl bg-buttonDisable border border-btnGradientFrom text-white font-medium hover:font-bold"
-          >
-            Movie
-          </button> */}
         </div>
       </div>
-      <div className="flex flex-col-reverse lg:flex-row py-4">
-        <div
+      <div className="flex">
+        {/* <div
           className={`lg:w-5/12 w-full flex justify-items-start ${
             !isBigScreen ? "py-8" : ""
           }`}
@@ -95,49 +89,17 @@ const TopSong = () => {
               />
             </div>
           </div>
-        </div>
-        {/* <div className="lg:w-7/12 h-[420px] overflow-y-scroll overflow-x-hidden grid">
-          <SongQueueCard
-            id={1}
-            isOpen={openCardId === 1}
-            handleToggle={() => handleToggle(1)}
-          />
-          <SongQueueCard
-            id={2}
-            isOpen={openCardId === 2}
-            handleToggle={() => handleToggle(2)}
-          />
-          <SongQueueCard
-            id={3}
-            isOpen={openCardId === 3}
-            handleToggle={() => handleToggle(3)}
-          />
-          <SongQueueCard
-            id={4}
-            isOpen={openCardId === 4}
-            handleToggle={() => handleToggle(4)}
-          />
-          <SongQueueCard
-            id={5}
-            isOpen={openCardId === 5}
-            handleToggle={() => handleToggle(5)}
-          />
-          <SongQueueCard
-            id={6}
-            isOpen={openCardId === 6}
-            handleToggle={() => handleToggle(6)}
-          />
         </div> */}
-        <div className="lg:w-7/12 h-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }, (_, index) => (
-            <SongQueueGridCard
-              key={index + 1}
-              id={index + 1}
-              isOpen={openCardId === index + 1}
-              handleToggle={() => handleToggle(index + 1)}
-            />
-          ))}
-        </div>
+      </div>
+      <div className="lg:w-full h-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {Array.from({ length: 10 }, (_, index) => (
+          <SongQueueGridCard
+            key={index + 1}
+            id={index + 1}
+            isOpen={openCardId === index + 1}
+            handleToggle={() => handleToggle(index + 1)}
+          />
+        ))}
       </div>
     </div>
   );

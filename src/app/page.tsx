@@ -1,4 +1,5 @@
 import Carousel from "@/components/Carousel/carousel";
+import Footer from "@/components/Footer/footer";
 import Songs from "@/components/Songs/Songs";
 import TopSong from "@/components/SongTab/TopSong";
 import AppLayout from "@/containers/layout/AppLayout";
@@ -186,6 +187,7 @@ export default function Home() {
         slides={SongSlides}
         link={"your_mood"}
       />
+      <Footer />
     </AppLayout>
   );
 }

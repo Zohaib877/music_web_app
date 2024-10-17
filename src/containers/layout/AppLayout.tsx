@@ -19,7 +19,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
           <Sidebar />
           <main className="w-full pl-0 lg:pl-24 xl:pl-24">{children}</main>
         </div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
       <SearchModel />
       <PlayerBar />
