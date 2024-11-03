@@ -4,16 +4,11 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { MediaItem } from "@/lib/features/Tops/TopsSlice";
-import store, { RootState } from "@/lib/store";
-import {
-  addQueueList,
-  playTrack,
-} from "@/lib/features/Player/mediaPlayerSlice";
+import { RootState } from "@/lib/store";
+import { Artist } from "@/lib/features/Home/homeSlice";
 import { useSelector } from "react-redux";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 enum types {
   IMAGE,
@@ -99,10 +94,10 @@ interface SongsProps {
   banner?: boolean;
   dot?: boolean;
   arrow?: boolean;
-  slides: MediaItem[];
+  slides: Artist[];
 }
 
-const Songs: React.FC<SongsProps> = ({
+const Artists: React.FC<SongsProps> = ({
   type,
   heading,
   link,
@@ -111,20 +106,13 @@ const Songs: React.FC<SongsProps> = ({
   slides,
 }) => {
   const { loading } = useSelector((state: RootState) => state.home);
-  const [ratio, setRatio] = useState(16/9) 
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
-  const settings = getSettings(type, dot, arrow);
-  const router = useRouter();
+  const [ratio, setRatio] = useState(16/9) 
+  const settings = useMemo(
+    () => getSettings(type, dot, arrow),
+    [type, dot, arrow]
+  );
 
-  const handlePlay = (data: MediaItem) => {
-    if (data.type === "audio") {
-      router.push(`/player/audio/${data.id}`);
-    } else if (data.type === "video") {
-      router.push(`/player/video/${data.id}`);
-    }
-    store.dispatch(playTrack(data));
-    store.dispatch(addQueueList(slides));
-  };
   if (loading) {
     return (
       <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly">
@@ -162,7 +150,6 @@ const Songs: React.FC<SongsProps> = ({
       </div>
     );
   }
-
   return (
     <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly">
       {heading && (
@@ -181,23 +168,22 @@ const Songs: React.FC<SongsProps> = ({
 
       <div className={`${type !== types.BANNER ? `py-1 mb-9` : ``}`}>
         <Slider {...settings} className="custom-slider">
-          {slides.map((item) => (
+          {slides.map((item, index) => (
             <div
-              key={item.id}
+              key={`${item.id}-${index}`}
               className={`flex flex-col justify-center items-center hover:scale-105 ${
                 type === types.BANNER
                   ? `h-80 w-64`
                   : isBigScreen
                   ? `h-70 w-64`
                   : `h-28 w-28`
-              } px-4 py-3`}
-              onClick={() => handlePlay(item)}
+              } px-4 py-3 my-3`}
             >
               <Image
-                src={item.cover_image}
-                alt={item.title}
+                src={item.image}
+                alt={item.name}
                 width={type === types.BANNER ? 450 : isBigScreen ? 200 : 121}
-                height={type === types.BANNER ? 450 : isBigScreen ? 150 : 73}
+                height={type === types.BANNER ? 450 : isBigScreen ? 200/ ratio: 73}
                 className="mb-3 mx-auto cursor-pointer rounded-sm"
                 objectFit="contain"
                 style={{
@@ -209,13 +195,14 @@ const Songs: React.FC<SongsProps> = ({
                   setRatio(naturalWidth / naturalHeight)
                 }
               />
-              {item.title && (
+              {item.name && (
                 <p
                   className={`text-fontPrimary ${
                     isBigScreen ? "text-base font-medium" : "text-xs font-thin"
                   } text-center cursor-pointer hover:underline`}
+                  //   onClick={() => handlePlay(item)}
                 >
-                  {item.title}
+                  {item.name}
                 </p>
               )}
             </div>
@@ -226,4 +213,4 @@ const Songs: React.FC<SongsProps> = ({
   );
 };
 
-export default Songs;
+export default Artists;

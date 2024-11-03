@@ -49,16 +49,17 @@ const SongSlides: Slide[] = [
 ];
 
 const SearchModel = () => {
-  const isOpen    = useSelector((state: RootState) => state.searchModel.isOpen);
-  const dispatch  = useDispatch();
-  const router    = useRouter();
+  const {trendingSongs} = useSelector((state: RootState) => state.home);
+  const isOpen = useSelector((state: RootState) => state.searchModel.isOpen);
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     dispatch(closeSearchModel());
     setSearchQuery("");
-    router.push('/search');
+    router.push("/search");
     console.log("Search submitted with query:", searchQuery);
   };
 
@@ -67,7 +68,7 @@ const SearchModel = () => {
       dispatch(closeSidebar());
     }
   }, [isOpen, dispatch]);
-  
+
   if (!isOpen) return null;
 
   return (
@@ -87,7 +88,7 @@ const SearchModel = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent border border-borderPrimary rounded-full h-12 text-fontPrimary focus:ring-blue-500 block ps-5 pe-10"
-              placeholder="Search Audio, Video, Movie, Artist..."
+              placeholder="Search Audio, Video, Artist..."
               required
             />
             <button
@@ -114,7 +115,7 @@ const SearchModel = () => {
           Top Trending
         </h1>
 
-        <Songs type={0} dot={false} arrow={false} slides={SongSlides} />
+        <Songs type={0} dot={false} arrow={false} slides={trendingSongs} />
       </div>
     </div>
   );

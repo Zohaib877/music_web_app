@@ -1,9 +1,24 @@
 "use client";
+
+import {
+  pauseTrack,
+  playNext,
+  playPrevious,
+  setCurrentTime,
+  setDuration,
+  setVolume,
+  toggleLike,
+  toggleMute,
+  togglePlayPause,
+} from "@/lib/features/Player/mediaPlayerSlice";
+import { AppDispatch, RootState } from "@/lib/store";
+import { post } from "@/utils/axios";
+import { durationToSeconds, formatTime } from "@/utils/util";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { BsRepeat } from "react-icons/bs";
 import { CiVolumeHigh, CiVolumeMute } from "react-icons/ci";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import {
   IoDownloadOutline,
@@ -12,92 +27,160 @@ import {
   IoPlayBackOutline,
   IoPlayForwardOutline,
 } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 
 const AudioPlayer = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { currentTrack, isPlaying, volume, mute, media_duration,currentTime } = useSelector(
+    (state: RootState) => state.mediaPlayer
+  );
   const [track, setTrack] = useState<number>(0);
-  const [volume, setVolume] = useState<number>(45);
-  const [mute, setMute] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [duration, setDuration] = useState<number>(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // Create a ref to store the interval ID
+  const durationIntervalRef = useRef<NodeJS.Timeout | null>(null); // Reference to store interval ID
+
+  useEffect(() => {
+    if (audioRef.current && currentTrack.file_path) {
+      audioRef.current.src = currentTrack.file_path;
+      audioRef.current.load();
+      audioRef.current.currentTime = currentTime;
+
+      if (isPlaying) audioRef.current.play();
+      // if (isPlaying) {
+      //   audioRef.current.play();
+      // }
+    }
+  }, [currentTrack.file_path, currentTrack.id]);
+
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play();
+        // Start tracking duration every 10 seconds if not already tracking
+        if (!durationIntervalRef.current) {
+          durationIntervalRef.current = setInterval(() => {
+            trackSongDuration(
+              currentTrack.id,
+              audioRef.current?.currentTime || 0
+            );
+          }, 10000); // Call every 10 seconds
+        }
+      } else {
+        audioRef.current.pause();
+        dispatch(pauseTrack());
+        // Clear the interval when the song is paused
+        if (durationIntervalRef.current) {
+          clearInterval(durationIntervalRef.current);
+          durationIntervalRef.current = null; // Reset the ref
+        }
+      }
+    }
+  }, [isPlaying, currentTrack.id]);
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = mute ? 0 : volume / 100;
     }
-  }, [mute, volume]);
+  }, [volume, mute]);
 
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      const handleEnded = () => {
+        setTrack(0);
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+      };
+      audio.addEventListener("ended", handleEnded);
+      return () => {
+        audio.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, []);
+  const trackSongDuration = async (mediaId: number, currentTime: number) => {
+    const duration = formatTime(currentTime);
+    const formData = new FormData();
+    formData.append("media_id", mediaId.toString());
+    formData.append("duration", duration);
+
+    try {
+      const response = await post({
+        url: "recently-played/create",
+        data: formData,
+        includeToken: true,
+      });
+      console.log("Response:", response);
+    } catch (error) {
+      console.error("Error tracking song duration:", error);
     }
   };
 
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setVolume(parseFloat(e.target.value)));
+  };
+
+  const togglePlayPauseHandler = () => {
+    dispatch(togglePlayPause());
+  };
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setTrack((audioRef.current.currentTime / duration) * 100);
+      const currentTime = audioRef.current.currentTime;
+      const totalDuration = durationToSeconds(media_duration);
+      const percentage = (currentTime / totalDuration) * 100;
+      setTrack(percentage);
+      dispatch(setCurrentTime(currentTime));
     }
   };
-
   const TrackChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTrack = parseFloat(e.target.value);
-    setTrack(newTrack);
+    const value = parseFloat(e.target.value);
+    const totalDurationInSeconds = durationToSeconds(media_duration);
+
     if (audioRef.current) {
-      audioRef.current.currentTime = (newTrack / 100) * duration;
+      audioRef.current.currentTime = (value / 100) * totalDurationInSeconds;
+    }
+  };
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      dispatch(setDuration(audioRef.current.duration));
     }
   };
 
-  const VolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVolume(parseFloat(e.target.value));
-    if (audioRef.current) {
-      audioRef.current.volume = mute ? 0 : volume / 100;
-    }
+  const handleLikeToggle = () => {
+    dispatch(toggleLike(currentTrack.id));
   };
 
-  const togglePlayPause = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
+  const handleNext = () => {
+    dispatch(playNext());
   };
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  const handlePrevious = () => {
+    dispatch(playPrevious());
   };
-
   return (
     <>
-      {/* Toggle Screen Mobile */}
       <div className="w-full flex justify-end items-end lg:hidden xl:hidden">
         <div className="text-fontPrimary cursor-pointer">
           <IoIosArrowDown size={35} />
         </div>
       </div>
 
-      {/* Player Card */}
       <div className="w-full h-auto flex flex-col justify-items-center items-center px-12 pb-9">
         <Image
-          src="/assets/images/thumbnail/song_mobile.png"
-          alt="Wo Larki Khawab Mere Dekhti Hai"
+          src={currentTrack.cover_image}
+          alt={currentTrack.title}
           width={280}
           height={260}
-        ></Image>
+        />
         <h1 className="text-fontPrimary font-bold text-xl pt-6">
-          Wo Larki Khawab Mere Dekhti Hai
+          {currentTrack.title}
         </h1>
         <h1 className="text-fontPrimary font-light text-xs pt-1">
-          Nadeem Abbas Khan Lonay Wala
+          {currentTrack.description}
         </h1>
       </div>
 
-      {/* Player Tracker */}
       <div className="w-full flex flex-row justify-start items-center pb-3">
         <p className="text-fontPrimary text-base font-light pr-2">
           {formatTime(audioRef.current?.currentTime || 0)}
@@ -122,7 +205,7 @@ const AudioPlayer = () => {
           </div>
         </div>
         <p className="text-fontPrimary text-base font-light pl-2">
-          {formatTime(duration)}
+          {formatTime(media_duration)}
         </p>
       </div>
 
@@ -133,22 +216,29 @@ const AudioPlayer = () => {
         </div>
         <div className="flex-1 w-full py-4">
           <div className="w-full flex justify-center items-center gap-3">
-            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center">
+            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center" onClick={handlePrevious}>
               <IoPlayBackOutline size={26} />
             </button>
             <button
               className="w-14 h-14 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"
-              onClick={togglePlayPause}
+              onClick={togglePlayPauseHandler}
             >
               {isPlaying ? <IoPause size={30} /> : <IoPlay size={30} />}
             </button>
-            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center">
+            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"onClick={handleNext}>
               <IoPlayForwardOutline size={26} />
             </button>
           </div>
         </div>
-        <div className="text-buttonPrimary text-xl">
-          <FaHeart size={35} />
+        <div
+          className="text-buttonPrimary text-xl cursor-pointer"
+          onClick={handleLikeToggle}
+        >
+          {currentTrack.is_favorite ? (
+            <FaHeart size={35} />
+          ) : (
+            <FaRegHeart size={35} />
+          )}
         </div>
       </div>
 
@@ -156,7 +246,7 @@ const AudioPlayer = () => {
       <div className="w-full flex flex-row justify-start items-center pb-3">
         <div
           className="text-fontPrimary text-xl cursor-pointer"
-          onClick={() => setMute(!mute)}
+          onClick={() => dispatch(toggleMute())}
         >
           {mute ? <CiVolumeMute size={35} /> : <CiVolumeHigh size={35} />}
         </div>
@@ -174,7 +264,7 @@ const AudioPlayer = () => {
               max="100"
               value={volume}
               step="0.1"
-              onChange={VolumeChange}
+              onChange={handleVolumeChange}
               className="range-slider w-full -mt-1.5"
             />
           </div>
@@ -183,13 +273,10 @@ const AudioPlayer = () => {
           <IoDownloadOutline size={35} />
         </div>
       </div>
-
-      {/* Audio Element */}
       <audio
         ref={audioRef}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
-        src="https://www.kozco.com/tech/LRMonoPhase4.mp3"
       />
     </>
   );

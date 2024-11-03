@@ -1,31 +1,42 @@
 "use client";
 import { useState, useEffect } from "react";
-import SongQueueCard from "../SongQueueCard/SongQueueCard";
-import Image from "next/image";
-import { useMediaQuery } from "react-responsive";
 import { useRouter } from "next/navigation";
 import SongQueueGridCard from "../SongQueueCard/SongQueueGridCard";
+import { useDispatch, useSelector } from "react-redux";
+import store, { RootState } from "@/lib/store";
+import { fetchTopMedia } from "@/lib/features/Tops/TopsSlice";
+import Songs from "../Songs/Songs";
+import { addToQueue } from "@/lib/features/Player/mediaPlayerSlice";
 
 const TopSong = () => {
+  const dispatch = useDispatch();
+
+  const { audio, video, movie, loading, error } = useSelector((state: RootState) => state.topMedis);
+
   const [openCardId, setOpenCardId] = useState<Number | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();
+  const [isVideoSelected, setIsVideoSelected] = useState(false); // State to track selection
 
-  // Handle component mount
+  const router = useRouter();
+  const slides = isVideoSelected ? video : audio;
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Always call useMediaQuery, but ignore the value until mounted
-  const isBigScreen = useMediaQuery({ minWidth: 1024 });
+  useEffect(() => {
+    store.dispatch(fetchTopMedia());
+  }, [dispatch]);
+
+  const handleMediaToggle = (isVideo: boolean) => {
+    setIsVideoSelected(isVideo);
+  };
 
   const handleToggle = (id: number) => {
     setOpenCardId(openCardId === id ? null : id);
   };
 
-  // If the component isn't mounted yet, return a default layout (optional: a loading state could be returned)
   if (!isMounted) {
-    return null; // Prevent rendering until mounted
+    return null;
   }
 
   return (
@@ -35,71 +46,35 @@ const TopSong = () => {
         <div className="flex justify-center pt-6 lg:pt-0 xl:pt-0 lg:justify-end xl:justify-end items-center">
           <button
             type="button"
-            className="w-fit h-9 lg:h-11 xl:h-11 px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl bg-buttonPrimary border border-btnGradientFrom text-white font-medium hover:font-bold"
+            className={`w-fit h-9 lg:h-11 xl:h-11 px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl ${!isVideoSelected ? 'bg-buttonPrimary' : 'bg-buttonDisable'} border border-btnGradientFrom text-white font-medium hover:font-bold`}
+            onClick={() => handleMediaToggle(false)}
           >
             Audio
           </button>
           <button
             type="button"
-            className="w-fit h-9 lg:h-11 xl:h-11 px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl bg-buttonDisable border border-btnGradientFrom text-white font-medium hover:font-bold"
+            className={`w-fit h-9 lg:h-11 xl:h-11 px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl ${isVideoSelected ? 'bg-buttonPrimary' : 'bg-buttonDisable'} border border-btnGradientFrom text-white font-medium hover:font-bold`}
+            onClick={() => handleMediaToggle(true)}
           >
             Video
           </button>
         </div>
       </div>
+
       <div className="flex">
-        {/* <div
-          className={`lg:w-5/12 w-full flex justify-items-start ${
-            !isBigScreen ? "py-8" : ""
-          }`}
-        >
-          <div className="w-10/12 flex justify-center items-center">
-            <div className="w-7/12 lg:w-7/12 xl:w-7/12 hover:scale-105">
-              {isBigScreen ? (
-                <Image
-                  src="/assets/images/thumbnail/tumbnail2.jpg"
-                  alt="song trending"
-                  width={300}
-                  height={420}
-                  style={{ borderRadius: 20 }}
-                />
-              ) : (
-                <Image
-                  src="/assets/images/thumbnail/song_mobile.png"
-                  alt="song trending"
-                  width={176}
-                  height={174}
-                />
-              )}
-            </div>
-            <div className="w-5/12 lg:w-4/12 xl:w-4/12 h-full flex flex-col justify-center items-start pl-3 xl:pl-1">
-              <p className="text-fontPrimary font-thin text-base lg:text-2xl xl:text-2xl mt-2">
-                Top 10 Hits
-              </p>
-              <h3 className="text-fontPrimary font-bold text-xl lg:text-3xl xl:text-3xl mt-2 whitespace-nowrap lg:whitespace-pre-line xl:whitespace-pre-line">
-                Trending Music
-              </h3>
-              <Image
-                className="my-3 cursor-pointer"
-                src="/assets/icons/play.png"
-                alt="play"
-                width={isBigScreen ? 50 : 35}
-                height={isBigScreen ? 50 : 35}
-                onClick={() => router.push("/player/audio/1")}
-              />
-            </div>
-          </div>
-        </div> */}
-      </div>
       <div className="lg:w-full h-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {Array.from({ length: 10 }, (_, index) => (
-          <SongQueueGridCard
-            key={index + 1}
-            id={index + 1}
-            isOpen={openCardId === index + 1}
-            handleToggle={() => handleToggle(index + 1)}
-          />
-        ))}
+            {
+              slides.map((_, index) => (
+                <SongQueueGridCard
+                  key={index + 1}
+                  data={_}
+                  queue={slides}
+                  isOpen={openCardId === _.id}
+                  handleToggle={() => handleToggle(_.id)}
+                />
+              ))
+            }
+          </div>
       </div>
     </div>
   );

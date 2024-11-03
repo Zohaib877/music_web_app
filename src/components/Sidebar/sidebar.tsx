@@ -4,28 +4,17 @@ import { closeSidebar, openSidebar } from "@/lib/features/Sidebar/SidebarSlice";
 import { RootState } from "@/lib/store";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
 const Sidebar = () => {
   const isOpen = useSelector((state: RootState) => state.Sidebar.isOpen);
+  const token = useSelector((state: RootState) => state.user.token);
   const dispatch = useDispatch();
   const router = useRouter();
-  const [currentPath, setCurrentPath] = useState<string>("");
+  const pathname = usePathname();
 
-  // Update currentPath when the component mounts or URL changes
-  useEffect(() => {
-    setCurrentPath(window.location.pathname);
-    const handleRouteChange = () => {
-      setCurrentPath(window.location.pathname);
-    };
-    window.addEventListener("popstate", handleRouteChange);
-    return () => {
-      window.removeEventListener("popstate", handleRouteChange);
-    };
-  }, []);
-  const isActive = (path: string) => currentPath === path;
+  const isActive = (path: string) => pathname === path;
 
   return (
     <>
@@ -81,32 +70,34 @@ const Sidebar = () => {
               </p>
             </Link>
           </li>
-          <li className="flex items-center my-5 group w-full hover:cursor-pointer">
-            <Link
-              href="/my-library"
-              className="flex flex-row items-center w-full"
-              onClick={() => dispatch(closeSidebar())}
-            >
-              <Image
-                src="/assets/icons/library_icon.png"
-                alt="library"
-                width={28}
-                height={28}
-                className={`group-hover:filter-custom-filter ${
-                  isActive("/my-library") ? "filter-custom-filter" : ""
-                }`}
-              />
-              <p
-                className={`font-normal text-xl text-fontPrimary ${
-                  isOpen ? "pl-7" : "hidden"
-                } group-hover:filter-custom-filter ${
-                  isActive("/my-library") ? "filter-custom-filter" : ""
-                }`}
+          {token && (
+            <li className="flex items-center my-5 group w-full hover:cursor-pointer">
+              <Link
+                href="/my-library"
+                className="flex flex-row items-center w-full"
+                onClick={() => dispatch(closeSidebar())}
               >
-                My Library
-              </p>
-            </Link>
-          </li>
+                <Image
+                  src="/assets/icons/library_icon.png"
+                  alt="library"
+                  width={28}
+                  height={28}
+                  className={`group-hover:filter-custom-filter ${
+                    isActive("/my-library") ? "filter-custom-filter" : ""
+                  }`}
+                />
+                <p
+                  className={`font-normal text-xl text-fontPrimary ${
+                    isOpen ? "pl-7" : "hidden"
+                  } group-hover:filter-custom-filter ${
+                    isActive("/my-library") ? "filter-custom-filter" : ""
+                  }`}
+                >
+                  My Library
+                </p>
+              </Link>
+            </li>
+          )}
           <li className="flex items-center my-5 group w-full hover:cursor-pointer">
             <Link
               href="/language"

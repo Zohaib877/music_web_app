@@ -1,8 +1,15 @@
+"use client"
+import Artists from "@/components/Artists/Artists";
 import Carousel from "@/components/Carousel/carousel";
 import Footer from "@/components/Footer/footer";
+import PlayerBar from "@/components/PlayerBar/PlayerBar";
 import Songs from "@/components/Songs/Songs";
 import TopSong from "@/components/SongTab/TopSong";
 import AppLayout from "@/containers/layout/AppLayout";
+import { fetchHomeData } from "@/lib/features/Home/homeSlice";
+import { AppDispatch, RootState } from "@/lib/store";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 interface Slide {
   url: string;
@@ -36,158 +43,49 @@ const BannerSlides: Slide[] = [
   },
 ];
 
-const SongSlides: Slide[] = [
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Romantic",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Classic",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Sad",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Ghazal",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Patriotic",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Pop",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Dhamal",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Qawali",
-  },
-];
-const VideoSlides: Slide[] = [
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/video_desktop.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-];
-const newRelease: Slide[] = [
-  {
-    url: "/assets/images/thumbnail/thumbnail4.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/thumbnail3.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/tumbnail1.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/thumbnail4.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/tumbnail1.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/tumbnail2.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/thumbnail4.jpg",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-];
-const ArtistSlides: Slide[] = [
-  {
-    url: "/assets/images/thumbnail/artist_mobile.png",
-    title: "Gul panra",
-  },
-  {
-    url: "/assets/images/thumbnail/artist_mobile.png",
-    title: "Laila Khan",
-  },
-  {
-    url: "/assets/images/thumbnail/artist_mobile.png",
-    title: "Zeeshan Khan",
-  },
-  {
-    url: "/assets/images/thumbnail/artist_mobile.png",
-    title: "Malkoo",
-  },
-  {
-    url: "/assets/images/thumbnail/artist_mobile.png",
-    title: "Shafaullah Khan",
-  },
-  {
-    url: "/assets/images/thumbnail/artist_mobile.png",
-    title: "Atif Aslam",
-  },
-];
-
 export default function Home() {
+  const dispatch = useDispatch<AppDispatch>();
+  
+  const { newRelease, videoSongs, trendingSongs, topArtists, pickYourMode, loading, error } = useSelector((state: RootState) => state.home);
+
+  useEffect(() => {
+    dispatch(fetchHomeData());
+  }, []);
+  
   return (
     <AppLayout>
       <Carousel autoSlide={true} slides={BannerSlides} />
       <TopSong />
       <Songs
-        type={0}
-        heading="New Releases"
-        slides={newRelease}
-        link={"new_releases"}
+        type={0} 
+        heading="New Release"
+        slides={newRelease} 
+        link="new_release" 
       />
       <Songs
-        type={1}
+        type={1} 
         heading="Video Songs"
-        slides={VideoSlides}
-        link={"video_songs"}
+        slides={videoSongs}
+        link="video_song" 
       />
       <Songs
-        type={0}
+        type={0} 
+        heading="Trending Songs"
+        slides={trendingSongs}
+        link="trending_song" 
+      />
+      <Artists
+        type={0} 
         heading="Top Artists"
-        slides={ArtistSlides}
-        link={"top_artists"}
+        slides={topArtists}
+        link="top_artists" 
       />
-      {/* <Songs type={0} heading="Trending Songs" slides={SongSlides} link={'trending_songs'} /> */}
       <Songs
-        type={0}
+        type={0} 
         heading="Pick Your Mood"
-        slides={SongSlides}
-        link={"your_mood"}
+        slides={pickYourMode}
+        link="your_mood" 
       />
-      <Footer />
     </AppLayout>
   );
 }

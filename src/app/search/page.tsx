@@ -1,5 +1,9 @@
+"use client";
+import Artists from "@/components/Artists/Artists";
 import Songs from "@/components/Songs/Songs";
 import AppLayout from "@/containers/layout/AppLayout";
+import { RootState } from "@/lib/store";
+import { useSelector } from "react-redux";
 
 interface Slide {
     url: string;
@@ -98,12 +102,13 @@ const ArtistSlides: Slide[] = [
 ];
 
 const Search = () => {
+  const {trendingSongs, topArtists , media} = useSelector((state: RootState) => state.home);
     return (
         <AppLayout>
-            <Songs type={1} heading="Video Songs" slides={VideoSlides} link={'video_songs'} />
-            <Songs type={0} heading="Top Artists" slides={ArtistSlides} link={'top_artists'} />
-            <Songs type={0} heading="Trending Songs" slides={SongSlides} link={'trending_songs'} />
-            <Songs type={0} heading="Pick Your Mood" slides={SongSlides} link={'your_mood'} />
+            <Songs type={1} heading="Video Songs" slides={media} link={'video_songs'} />
+            <Artists type={0} heading="Top Artists" slides={topArtists} link={'top_artists'} />
+            <Songs type={0} heading="Trending Songs" slides={trendingSongs} link={'trending_songs'} />
+            <Songs type={0} heading="Pick Your Mood" slides={trendingSongs} link={'your_mood'} />
         </AppLayout>
     );
 }

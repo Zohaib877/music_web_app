@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 import { IoEyeOutline } from "react-icons/io5";
 
@@ -12,21 +13,20 @@ const TabContent: React.FC<TabContentProps> = ({ items }) => (
         key={index}
         className="flex flex-col justify-center items-center h-auto w-fit px-4 py-3"
       >
-        <img
-          src={item.src}
-          alt={item.alt}
-          width={250}
-          height={250}
-          className="mb-3 mx-auto"
-          
+        <Image
+          src={item.src} 
+          alt={item.alt} 
+          width={250} 
+          height={250} 
+          className="mb-3 mx-auto" 
         />
         <p className="text-fontPrimary text-base font-medium text-center">
           {item.text}
         </p>
-        {item.view && 
+        {item.view &&
           <p className="text-fontPrimary text-xs font-medium text-center flex flex-row gap-1 items-center">
-              <IoEyeOutline size={20} />  
-              { item.view} view
+            <IoEyeOutline size={20} />
+            {item.view} view
           </p>
         }
       </div>

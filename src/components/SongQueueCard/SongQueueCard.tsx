@@ -1,24 +1,40 @@
+import {
+  addQueueList,
+  playTrack,
+  toggleLike,
+} from "@/lib/features/Player/mediaPlayerSlice";
+import { MediaItem } from "@/lib/features/Tops/TopsSlice";
+import store, { AppDispatch, RootState } from "@/lib/store";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoDownloadOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 
 interface SongQueueCardProps {
-  id: number;
+  item: MediaItem;
   isOpen: boolean;
   handleToggle: () => void;
 }
 
 const SongQueueCard: React.FC<SongQueueCardProps> = ({
-  id,
+  item,
   isOpen,
   handleToggle,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
   const router = useRouter();
+  const { currentTrack } = useSelector((state: RootState) => state.mediaPlayer);
+  const handlePlay = () => {
+    store.dispatch(playTrack(item));
+  };
+  const handleLikeToggle = () => {
+    dispatch(toggleLike(item.id));
+  };
   return (
     <div
       className={`h-auto rounded-lg lg:rounded-full ${
@@ -33,11 +49,11 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
             alt="play"
             width={35}
             height={35}
-            onClick={() => router.push("/player/audio/1")}
+            onClick={handlePlay}
           />
           <Image
             className="ml-2"
-            src="/assets/images/thumbnail/song_mobile.png"
+            src={item.cover_image}
             alt="play"
             width={55}
             height={55}
@@ -46,12 +62,12 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
         <div className="ml-2 flex flex-col justify-start w-7/12">
           <h3
             className="text-fontPrimary font-bold text-xs truncate cursor-pointer hover:underline"
-            onClick={() => router.push("/player/audio/1")}
+            onClick={handlePlay}
           >
-            Wo Larki Khawab Mere Dekhti Hai
+            {item.title}
           </h3>
           <p className="text-fontPrimary font-light text-xs truncate">
-            Zeeshan Khan Rokhri
+            {item.description}
           </p>
         </div>
         {!isBigScreen ? (
@@ -62,20 +78,27 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
             >
               <IoIosArrowDown width={55} />
             </div>
-            <p className="text-fontPrimary font-thin text-xs">05:23</p>
+            <p className="text-fontPrimary font-thin text-xs">
+              {item.duration}
+            </p>
           </div>
         ) : (
           <div className="flex justify-evenly items-center w-3/12">
             <div className="text-fontPrimary text-xl">
               <IoDownloadOutline />
             </div>
-            <div className="text-buttonPrimary text-xl">
-              <FaHeart />
+            <div
+              className="text-buttonPrimary text-xl cursor-pointer"
+              onClick={handleLikeToggle}
+            >
+               {item.is_favorite ? <FaHeart /> : <FaRegHeart />}
             </div>
             <div className="text-fontPrimary text-xl">
               <HiOutlineDotsVertical />
             </div>
-            <p className="text-fontPrimary font-thin text-xs">05:23</p>
+            <p className="text-fontPrimary font-thin text-xs">
+              {item.duration}
+            </p>
           </div>
         )}
       </div>

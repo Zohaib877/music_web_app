@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import StoreProvider from "./StoreProvider";
+import { Toaster } from "react-hot-toast";
+import AppWrapper from "@/components/AppWrapper";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,13 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
-      </head>
-      <body className={inter.className}>
-        <StoreProvider>{children}</StoreProvider>
-      </body>
-    </html>
+    <body className={inter.className}>
+      <Toaster position="top-right" reverseOrder={false} />
+      <StoreProvider>
+        <AppWrapper>{children}</AppWrapper>
+      </StoreProvider>
+    </body>
+  </html>
   );
 }

@@ -1,15 +1,27 @@
+// features/User/userSlice.ts
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface UserDetails {
+  id: number;
+  full_name: string;
+  email: string | null;
+  phone: string;
+  token: string;
+}
 
 interface UserState {
   phoneNumber: string;
-  otp: string;
   isLoggedIn: boolean;
+  token: string;
+  userDetails: UserDetails | null; 
 }
 
 const initialState: UserState = {
   phoneNumber: "",
-  otp: "",
   isLoggedIn: false,
+  token: '',
+  userDetails: null,
 };
 
 const userSlice = createSlice({
@@ -18,16 +30,18 @@ const userSlice = createSlice({
   reducers: {
     loginUser: (
       state,
-      action: PayloadAction<{ phoneNumber: string; otp: string }>
+      action: PayloadAction<{ phoneNumber: string; token: string; userDetails: UserDetails }>
     ) => {
       state.phoneNumber = action.payload.phoneNumber;
-      state.otp = action.payload.otp;
-      state.isLoggedIn = true; // Set logged-in status to true
+      state.token = action.payload.token; 
+      state.userDetails = action.payload.userDetails; 
+      state.isLoggedIn = true; 
     },
     logoutUser: (state) => {
       state.phoneNumber = "";
-      state.otp = "";
-      state.isLoggedIn = false; // Set logged-in status to false
+      state.token = '';
+      state.userDetails = null;
+      state.isLoggedIn = false; 
     },
   },
 });

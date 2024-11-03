@@ -13,7 +13,7 @@ import { logoutUser } from "@/lib/features/User/userSlice";
 const Header = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const phone = useSelector((state: RootState) => state.user.phoneNumber);
+  const { userDetails, token } = useSelector((state: RootState) => state.user);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -75,7 +75,7 @@ const Header = () => {
         {/* search input end */}
         {/* Large Screen Button start */}
         <div className="hidden lg:flex">
-          {phone === "" ? (
+          {token === "" ? (
             <button
               type="button"
               className="w-fit h-11 px-6 mx-2 rounded-3xl bg-gradient-to-r from-btnGradientFrom to-btnGradientto text-white font-medium hover:text-gray-200"
@@ -95,7 +95,7 @@ const Header = () => {
           >
             Download App
           </button>
-          {phone !== "" && (
+          {token !== "" && (
             <button
               type="button"
               className="w-fit h-11 px-6 mx-2 rounded-3xl bg-gradient-to-r from-btnGradientFrom to-btnGradientto text-white font-medium hover:text-gray-200"
@@ -104,17 +104,18 @@ const Header = () => {
               Subscribe
             </button>
           )}
-          {phone !== "" && (
+          {token !== "" && (
             <div className="ml-5">
-              <img
+              <Image
                 id="avatarButton"
-                typeof="button"
                 data-dropdown-toggle="userDropdown"
                 data-dropdown-placement="bottom-start"
-                className="w-10 h-10 rounded-full cursor-pointer "
+                className="w-10 h-10 rounded-full cursor-pointer"
                 src="/assets/images/thumbnail/avatar.png"
-                alt="Userdropdown"
+                alt="User dropdown"
                 onClick={toggleuserDropdown}
+                width={40}
+                height={40}
               />
 
               {dropdownVisible && (
@@ -123,9 +124,9 @@ const Header = () => {
                   className="z-10 absolute right-5 top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                 >
                   <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                    <div>Bonnie Green</div>
+                    <div>{userDetails?.full_name}</div>
                     <div className="font-medium truncate">
-                      name@flowbite.com
+                      {userDetails?.phone}
                     </div>
                   </div>
                   <ul
