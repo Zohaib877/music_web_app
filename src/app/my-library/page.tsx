@@ -83,9 +83,6 @@ const MyLibrary = () => {
                         <Link href="/my-library/video" className="w-fit h-11 px-6 mx-2 flex items-center rounded-3xl bg-buttonDisable border border-buttonPrimary text-white font-medium hover:text-gray-200">
                             Video
                         </Link>
-                        <Link href="/my-library/movie" className="w-fit h-11 px-6 mx-2 flex items-center rounded-3xl bg-buttonDisable border border-buttonPrimary text-white font-medium hover:text-gray-200">
-                            Movie
-                        </Link>
                     </div>
                 </div>
 

@@ -12,6 +12,8 @@ interface MediaState {
   currentTime: number;
   loading: boolean;
   error: string | null;
+  isShuffled: boolean;
+  repeatMode: "off" | "one" | "all";
 }
 
 const initialState: MediaState = {
@@ -36,6 +38,8 @@ const initialState: MediaState = {
   currentTime: 0,
   loading: false,
   error: null,
+  isShuffled: false,
+  repeatMode: "off",
 };
 export const toggleLike = createAsyncThunk(
   "mediaPlayer/toggleLike",
@@ -47,6 +51,18 @@ export const toggleLike = createAsyncThunk(
     return { mediaId, success: response.code === 200 };
   }
 );
+
+
+// Shuffle the queue
+const shuffleQueue = (queue: MediaItem[], currentTrack: MediaItem): MediaItem[] => {
+  const shuffledQueue = [...queue].filter((track) => track.id !== currentTrack.id);
+  for (let i = shuffledQueue.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledQueue[i], shuffledQueue[j]] = [shuffledQueue[j], shuffledQueue[i]];
+  }
+  return [currentTrack, ...shuffledQueue];
+};
+
 
 const mediaPlayerSlice = createSlice({
   name: "mediaPlayer",
@@ -92,9 +108,29 @@ const mediaPlayerSlice = createSlice({
       const currentIndex = state.queue.findIndex(
         (track) => track.id === state.currentTrack.id
       );
-      if (currentIndex >= 0 && currentIndex < state.queue.length - 1) {
+      // if (currentIndex >= 0 && currentIndex < state.queue.length - 1) {
+      //   state.currentTrack = state.queue[currentIndex + 1];
+      //   state.currentTime = 0; // Reset currentTime to 0 when playing the next track
+      // }
+      if (state.repeatMode === "one") {
+        // Repeat current track
+        state.currentTime = 0;
+      } else if (state.isShuffled) {
+        // Play random track in shuffle mode
+        const randomIndex = Math.floor(Math.random() * state.queue.length);
+        state.currentTrack = state.queue[randomIndex];
+        state.currentTime = 0;
+      } else if (currentIndex >= 0 && currentIndex < state.queue.length - 1) {
+        // Play next track
         state.currentTrack = state.queue[currentIndex + 1];
-        state.currentTime = 0; // Reset currentTime to 0 when playing the next track
+        state.currentTime = 0;
+      } else if (state.repeatMode === "all") {
+        // Loop back to start if repeat mode is all
+        state.currentTrack = state.queue[0];
+        state.currentTime = 0;
+      } else {
+        // End playback
+        state.isPlaying = false;
       }
     },
     playPrevious: (state) => {
@@ -102,9 +138,21 @@ const mediaPlayerSlice = createSlice({
         (track) => track.id === state.currentTrack.id
       );
       if (currentIndex > 0) {
+        state.currentTime = 0;
         state.currentTrack = state.queue[currentIndex - 1];
         state.isPlaying = true; // Optionally start playing
       }
+    },
+    toggleShuffle: (state) => {
+      state.isShuffled = !state.isShuffled;
+      state.queue = state.isShuffled
+        ? shuffleQueue(state.queue, state.currentTrack)
+        : state.queue; // Unshuffling can be handled by preserving the original order.
+    },
+    cycleRepeatMode: (state) => {
+      if (state.repeatMode === "off") state.repeatMode = "one";
+      else if (state.repeatMode === "one") state.repeatMode = "all";
+      else state.repeatMode = "off";
     },
   },
   extraReducers: (builder) => {
@@ -126,13 +174,14 @@ const mediaPlayerSlice = createSlice({
           songInQueue.is_favorite = !songInQueue.is_favorite;
           songInQueue.likes += songInQueue.is_favorite ? 1 : -1;
         }
-        
+
         state.loading = false;
       })
       .addCase(toggleLike.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to toggle like";
-      });
+      })
+
   },
 });
 
@@ -150,6 +199,8 @@ export const {
   setCurrentTime,
   playNext,
   playPrevious,
+  toggleShuffle,
+  cycleRepeatMode,
 } = mediaPlayerSlice.actions;
 
 export default mediaPlayerSlice.reducer;

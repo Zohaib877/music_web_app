@@ -10,6 +10,7 @@ interface RequestOptions {
     config?: AxiosRequestConfig;
     includeToken?: boolean;
 }
+
 interface ErrorResponse {
     error?: {
         messages: string[];
@@ -17,6 +18,7 @@ interface ErrorResponse {
     errors?: string | string[];
     message?: string;
 }
+
 const axiosInstance = axios.create({
     baseURL: BASEURL,
     timeout: 20000,
@@ -24,6 +26,7 @@ const axiosInstance = axios.create({
         Accept: "application/json",
     },
 });
+
 const setAuthToken = async () => {
     try {
         const USER_TOKEN = await getLocalStorageItem({ key: "token" });
@@ -37,6 +40,7 @@ const setAuthToken = async () => {
         // Handle the error if necessary
     }
 };
+
 class HttpError extends Error {
     status: number;
     errors?: string[] | string;
@@ -50,26 +54,25 @@ class HttpError extends Error {
         this.errors = errors;
     }
 }
+
 class NetworkError extends Error {
     constructor(message: string) {
         super(message);
     }
 }
+
 class SocketError extends Error {
     constructor(message: string) {
         super(message);
     }
 }
+
 const checkUnAuth = async (error?: string) => {
     if (error === "Unauthenticated") {
-        // store.dispatch(setIsUserLoggedIn(false));
         store.dispatch(logoutUser());
-        // await removeMultipleItem([
-        //   VARIABLES.IS_USER_LOGGED_IN,
-        //   VARIABLES.USER_TOKEN,
-        // ]);
     }
 };
+
 const handleRequestError = (error: AxiosError<ErrorResponse>) => {
     if (axios.isAxiosError(error)) {
         if (!error.response) {
@@ -97,14 +100,23 @@ const handleRequestError = (error: AxiosError<ErrorResponse>) => {
     }
     throw error;
 };
+
 const makeHttpRequest = async (
     config: AxiosRequestConfig,
     includeToken = true,
 ) => {
     try {
+        // Check if the token is available
+        const USER_TOKEN = await getLocalStorageItem({ key: "token" });
+        // If a token is available and includeToken is false, set it to true
+        if (USER_TOKEN && !includeToken) {
+            includeToken = true;
+        }
+
         if (includeToken) {
             await setAuthToken();
         }
+
         const response = await axiosInstance(config);
         if (response?.data?.response) {
             return response?.data?.response;
@@ -115,6 +127,7 @@ const makeHttpRequest = async (
         handleRequestError(error as AxiosError<ErrorResponse>);
     }
 };
+
 const get = async ({
     url,
     config = {},
@@ -122,6 +135,7 @@ const get = async ({
 }: RequestOptions) => {
     return makeHttpRequest({ method: "GET", url, ...config }, includeToken);
 };
+
 const post = async ({
     url,
     data,
@@ -133,6 +147,7 @@ const post = async ({
         includeToken,
     );
 };
+
 const put = async ({
     url,
     data,
@@ -141,6 +156,7 @@ const put = async ({
 }: RequestOptions) => {
     return makeHttpRequest({ method: "PUT", url, data, ...config }, includeToken);
 };
+
 const patch = async ({
     url,
     data,
@@ -152,9 +168,7 @@ const patch = async ({
         includeToken,
     );
 };
-// const remove = async (url, config={}, includeToken = true) => {
-//   return makeHttpRequest({ method: 'DELETE', url, ...config }, includeToken);
-// };
+
 const remove = async ({
     url,
     data = {},
@@ -174,6 +188,7 @@ const remove = async ({
     };
     return makeHttpRequest(requestOptions, includeToken);
 };
+
 const postWithSingleFile = async ({
     url,
     data,
@@ -199,6 +214,7 @@ const postWithSingleFile = async ({
         includeToken,
     );
 };
+
 const patchWithSingleFile = async ({
     url,
     data,
@@ -225,6 +241,7 @@ const patchWithSingleFile = async ({
         includeToken,
     );
 };
+
 export {
     setAuthToken,
     get,

@@ -7,6 +7,7 @@ import {
   setDuration,
   toggleLike,
   togglePlayPause,
+  toggleShuffle,
 } from "@/lib/features/Player/mediaPlayerSlice";
 import store, { AppDispatch, RootState } from "@/lib/store";
 import { post } from "@/utils/axios";
@@ -28,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const PlayerBar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentTrack, isPlaying, volume, mute, media_duration, currentTime } =
+  const { currentTrack, isPlaying, volume, mute, media_duration, currentTime, isShuffled } =
     useSelector((state: RootState) => state.mediaPlayer);
   const router = useRouter();
   const [value, setValue] = useState<number>(0);
@@ -203,7 +204,16 @@ const PlayerBar = () => {
   const handlePrevious = () => {
     dispatch(playPrevious());
   };
-
+  const handleToggleShuffle = () => {
+    dispatch(toggleShuffle());
+  };
+  const handleDownload = async () => {
+    const downloadUrl = `/api/download?url=${encodeURIComponent(currentTrack.file_path)}`;
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = currentTrack.title;
+    link.click();
+  };
   return (
     <div className="fixed bottom-0 left-0 w-full h-[70px] lg:h-[90px] xl:h-[90px] bg-black/100 z-20 flex flex-col justify-start lg:justify-center xl:justify-center">
       <audio
@@ -298,8 +308,8 @@ const PlayerBar = () => {
             <IoPlayForwardOutline size={isBigScreen ? 22 : 15} />
           </button>
           {isBigScreen && (
-            <div className="text-fontPrimary text-xl">
-              <BsRepeat />
+            <div className="text-fontPrimary text-xl" onClick={handleToggleShuffle}>
+              <BsRepeat className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"}/>
             </div>
           )}
           <div

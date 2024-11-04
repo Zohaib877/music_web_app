@@ -117,9 +117,9 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
               <div className="text-red-500 text-xl cursor-pointer" onClick={handleLikeToggle} style={{zIndex: 1000}}> 
                 {data.is_favorite ? <FaHeart /> : <FaRegHeart />}
               </div>
-              <div className="text-white text-xl">
+              {/* <div className="text-white text-xl">
                 <HiOutlineDotsVertical />
-              </div>
+              </div> */}
             </div>
           )}
         </div>
@@ -131,9 +131,9 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
             <div className="text-red-500 text-xl">
               <FaHeart />
             </div>
-            <div className="text-white text-xl">
+            {/* <div className="text-white text-xl">
               <HiOutlineDotsVertical />
-            </div>
+            </div> */}
           </div>
         )}
       </div>

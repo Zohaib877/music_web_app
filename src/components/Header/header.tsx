@@ -124,9 +124,9 @@ const Header = () => {
                   className="z-10 absolute right-5 top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                 >
                   <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                    <div>{userDetails?.full_name}</div>
+                    <div>{userDetails?.full_name ?? "Guest"}</div>
                     <div className="font-medium truncate">
-                      {userDetails?.phone}
+                      {userDetails?.phone ?? "guest@flowbite.com"}
                     </div>
                   </div>
                   <ul

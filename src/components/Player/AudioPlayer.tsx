@@ -10,6 +10,7 @@ import {
   toggleLike,
   toggleMute,
   togglePlayPause,
+  toggleShuffle,
 } from "@/lib/features/Player/mediaPlayerSlice";
 import { AppDispatch, RootState } from "@/lib/store";
 import { post } from "@/utils/axios";
@@ -31,7 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const AudioPlayer = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentTrack, isPlaying, volume, mute, media_duration,currentTime } = useSelector(
+  const { currentTrack, isPlaying, volume, mute, media_duration, currentTime, isShuffled } = useSelector(
     (state: RootState) => state.mediaPlayer
   );
   const [track, setTrack] = useState<number>(0);
@@ -40,6 +41,23 @@ const AudioPlayer = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null); // Create a ref to store the interval ID
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null); // Reference to store interval ID
 
+  // const songId = pathname.split("/").pop();
+
+  // useEffect(() => {
+  //   if (songId) {
+  //     const fetchSong = async (id: string) => {
+  //       const response = await fetch(`/api/songs/${id}`);
+  //       if (response.ok) {
+  //         const songData = await response.json();
+  //         dispatch(playTrack(songData));
+  //       } else {
+  //         console.error("Failed to fetch song:", response.status);
+  //       }
+  //     };
+
+  //     fetchSong(songId);
+  //   }
+  // }, [songId]);
   useEffect(() => {
     if (audioRef.current && currentTrack.file_path) {
       audioRef.current.src = currentTrack.file_path;
@@ -89,16 +107,21 @@ const AudioPlayer = () => {
     const audio = audioRef.current;
     if (audio) {
       const handleEnded = () => {
+        console.log("asassa");
+
+        handleNext()
         setTrack(0);
         clearInterval(intervalRef.current!);
         intervalRef.current = null;
       };
+
       audio.addEventListener("ended", handleEnded);
       return () => {
         audio.removeEventListener("ended", handleEnded);
       };
     }
-  }, []);
+  }, [dispatch]);
+
   const trackSongDuration = async (mediaId: number, currentTime: number) => {
     const duration = formatTime(currentTime);
     const formData = new FormData();
@@ -158,6 +181,18 @@ const AudioPlayer = () => {
   const handlePrevious = () => {
     dispatch(playPrevious());
   };
+
+  const handleToggleShuffle = () => {
+    dispatch(toggleShuffle());
+  };
+  const handleDownload = async () => {
+    const downloadUrl = `/api/download?url=${encodeURIComponent(currentTrack.file_path)}`;
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = currentTrack.title;
+    link.click();
+  };
+
   return (
     <>
       <div className="w-full flex justify-end items-end lg:hidden xl:hidden">
@@ -211,8 +246,8 @@ const AudioPlayer = () => {
 
       {/* Player Action Button */}
       <div className="w-full flex flex-row justify-start items-center pb-3">
-        <div className="text-fontPrimary text-xl">
-          <BsRepeat size={35} />
+        <div className="text-fontPrimary text-xl" onClick={handleToggleShuffle}>
+          <BsRepeat size={35} className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"} />
         </div>
         <div className="flex-1 w-full py-4">
           <div className="w-full flex justify-center items-center gap-3">
@@ -225,7 +260,7 @@ const AudioPlayer = () => {
             >
               {isPlaying ? <IoPause size={30} /> : <IoPlay size={30} />}
             </button>
-            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"onClick={handleNext}>
+            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center" onClick={handleNext}>
               <IoPlayForwardOutline size={26} />
             </button>
           </div>
@@ -269,7 +304,7 @@ const AudioPlayer = () => {
             />
           </div>
         </div>
-        <div className="text-fontPrimary text-xl">
+        <div className="text-fontPrimary text-xl cursor-pointer" onClick={handleDownload}>
           <IoDownloadOutline size={35} />
         </div>
       </div>
