@@ -1,8 +1,12 @@
-import { RootState } from "@/lib/store";
+import { addQueueList, playTrack } from "@/lib/features/Player/mediaPlayerSlice";
+import { MediaItem } from "@/lib/features/Tops/TopsSlice";
+import { AppDispatch, RootState } from "@/lib/store";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 
 const Footer = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const {
     newRelease,
     videoSongs,
@@ -12,6 +16,18 @@ const Footer = () => {
     loading,
     error,
   } = useSelector((state: RootState) => state.home);
+  const router = useRouter();
+
+  const handlePlay = (data: MediaItem, list: MediaItem[]) => {
+    if (data.type === "audio") {
+      router.push(`/player/audio/${data.id}`);
+    } else if (data.type === "video") {
+      router.push(`/player/video/${data.id}`);
+    }
+    dispatch(playTrack(data));
+    dispatch(addQueueList(list));
+  };
+
   return (
     <div className="bg-black w-full h-72 hidden lg:flex xl:flex justify-between items-start pt-9 pl-24">
       <div className="basis-1/5 px-5">
@@ -65,7 +81,7 @@ const Footer = () => {
       <div className="basis-1/5 px-5">
         <h1 className="text-fontPrimary text-2xl">NEW RELEASES</h1>
         {newRelease.slice(0, 6).map((item, index) => (
-          <ul className="list-none text-fontPrimary pt-3" key={item.id}>
+          <ul className="list-none text-fontPrimary pt-3" key={item.id} onClick={() => handlePlay(item, newRelease)}>
             <li className="text-fontPrimary text-xs cursor-pointer">
               {item.title}
             </li>
@@ -75,7 +91,7 @@ const Footer = () => {
       <div className="basis-1/5 px-5">
         <h1 className="text-fontPrimary text-2xl">Top Artist</h1>
         {topArtists.slice(0, 6).map((item, index) => (
-          <ul className="list-none text-fontPrimary pt-3" key={item.id}>
+          <ul className="list-none text-fontPrimary pt-3" key={item.id} >
             <li className="text-fontPrimary text-xs cursor-pointer">
               {item.name}
             </li>
@@ -85,7 +101,7 @@ const Footer = () => {
       <div className="basis-1/5 px-5">
         <h1 className="text-fontPrimary text-2xl">Pick Your Mood</h1>
         {pickYourMode.slice(0, 6).map((item, index) => (
-          <ul className="list-none text-fontPrimary pt-3" key={item.id}>
+          <ul className="list-none text-fontPrimary pt-3" key={item.id} onClick={() => handlePlay(item, pickYourMode)}>
             <li className="text-fontPrimary text-xs cursor-pointer">
               {item.title}
             </li>
