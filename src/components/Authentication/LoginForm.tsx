@@ -77,7 +77,7 @@ const LoginForm: React.FC = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full"
+          className="w-full max-w-md flex flex-col items-center"
         >
           <div className=" w-full">
             <input
