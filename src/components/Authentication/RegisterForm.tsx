@@ -74,15 +74,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <>
-      <div className="relative w-40 h-40 sm:w-40 sm:h-40">
-        <Image
-          src={require("../../../public/assets/images/brand/Logo.png")}
-          alt="Music App Logo"
-          fill
-          style={{ objectFit: "contain" }}
-        />
-      </div>
-      <h2 className="text-borderPrimary font-light max-sm:text-xl text-2xl max-sm:mb-3 mb-6 max-sm:mt-8 mt-32">
+      <h2 className="text-borderPrimary font-light max-sm:text-xl text-2xl max-sm:mb-3 mb-6 max-sm:mt-8 ">
         Sign Up For New Account
       </h2>
 
@@ -91,7 +83,7 @@ const RegisterForm: React.FC = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full"
+          className="w-full max-w-md flex flex-col items-center"
         >
           <input
             type="text"
