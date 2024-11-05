@@ -6,11 +6,6 @@ const ForgotForm: React.FC = () => {
   const router = useRouter();
   return (
     <>
-      <div className="hidden max-sm:flex flex-col justify-center items-center">
-        <p className="hidden max-sm:block text-borderPrimary font-semibold text-xl mt-20">
-          Music App name and logo
-        </p>
-      </div>
       <h2 className="text-white font-thin max-sm:text-xl text-2xl mb-6 max-sm:mt-36 mt-32">
         Forgot Password
       </h2>

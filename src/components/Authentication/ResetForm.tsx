@@ -4,14 +4,14 @@ import React from "react";
 const ResetForm: React.FC = () => {
   return (
     <>
-      <div className="relative w-40 h-40 sm:w-40 sm:h-40">
+      {/* <div className="relative w-40 h-40 sm:w-40 sm:h-40">
           <Image
             src={require("../../../public/assets/images/brand/Logo.png")}
             alt="Music App Logo"
             fill
             style={{ objectFit: "contain" }}
           />
-        </div>
+        </div> */}
       <h2 className="text-white font-thin max-sm:text-xl text-2xl mb-6 max-sm:mt-36 mt-32">
         Recover Your Password
       </h2>

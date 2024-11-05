@@ -115,7 +115,7 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
                 <IoDownloadOutline />
               </div>
               <div className="text-red-500 text-xl cursor-pointer" onClick={handleLikeToggle} style={{zIndex: 1000}}> 
-                {data.is_favorite ? <FaHeart /> : <FaRegHeart />}
+                {data.is_like ? <FaHeart /> : <FaRegHeart />}
               </div>
               {/* <div className="text-white text-xl">
                 <HiOutlineDotsVertical />

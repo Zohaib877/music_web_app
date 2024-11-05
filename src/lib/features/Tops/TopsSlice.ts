@@ -14,6 +14,7 @@ export interface MediaItem {
     recently_played_count: number;
     likes: number;
     is_favorite: boolean
+    is_like: boolean
 }
 
 interface MediaState {

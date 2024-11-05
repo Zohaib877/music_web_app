@@ -7,6 +7,7 @@ import Songs from "@/components/Songs/Songs";
 import TopSong from "@/components/SongTab/TopSong";
 import AppLayout from "@/containers/layout/AppLayout";
 import { fetchHomeData } from "@/lib/features/Home/homeSlice";
+import { fetchPlaylists } from "@/lib/features/PlayList/createPlayList";
 import { AppDispatch, RootState } from "@/lib/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -50,6 +51,7 @@ export default function Home() {
 
   useEffect(() => {
     dispatch(fetchHomeData());
+    dispatch(fetchPlaylists())
   }, []);
   
   return (
@@ -84,7 +86,7 @@ export default function Home() {
         type={0} 
         heading="Pick Your Mood"
         slides={pickYourMode}
-        link="your_mood" 
+        link="pick_your_mode" 
       />
     </AppLayout>
   );

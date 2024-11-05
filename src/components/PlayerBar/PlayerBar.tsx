@@ -1,4 +1,5 @@
 "use client";
+import { addFavourite, removeFavourite } from "@/lib/features/Favourite/favouriteSlice";
 import {
   pauseTrack,
   playNext,
@@ -11,6 +12,7 @@ import {
 } from "@/lib/features/Player/mediaPlayerSlice";
 import store, { AppDispatch, RootState } from "@/lib/store";
 import { post } from "@/utils/axios";
+import { errorToast, successToast } from "@/utils/toast";
 import { durationToSeconds, formatTime } from "@/utils/util";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -97,7 +99,7 @@ const PlayerBar = () => {
 
       if (isPlaying) audioRef.current.play();
     }
-  }, [currentTrack.file_path,currentTrack.id, currentTime, isPlaying]);
+  }, [currentTrack.file_path, currentTrack.id, currentTime, isPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -167,7 +169,6 @@ const PlayerBar = () => {
       setTrack(percentage);
       setLocalCurrentTime(currentTime);
 
-      // Update Redux state less frequently
       if (Math.abs(currentTime - localCurrentTime) > 1) {
         dispatch(setCurrentTime(currentTime));
       }
@@ -207,13 +208,27 @@ const PlayerBar = () => {
   const handleToggleShuffle = () => {
     dispatch(toggleShuffle());
   };
-  const handleDownload = async () => {
-    const downloadUrl = `/api/download?url=${encodeURIComponent(currentTrack.file_path)}`;
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = currentTrack.title;
-    link.click();
+  
+  const handleAddToFavorite = () => {
+    dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" })).unwrap().then((res) => {
+      successToast("Song added to favorites");
+      setIsDropdownOpen(!isDropdownOpen)
+    }).catch((err) => {
+      errorToast('Song is already in your favorites');
+      setIsDropdownOpen(!isDropdownOpen)
+    })
   };
+
+  const handleRemoveFromFavorite = () => {
+    dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" })).unwrap().then((res) => {
+      successToast("Song added to favorites");
+      setIsDropdownOpen(!isDropdownOpen)
+    }).catch((err) => {
+      errorToast('Song is already in your favorites');
+      setIsDropdownOpen(!isDropdownOpen)
+    })
+  };
+
   return (
     <div className="fixed bottom-0 left-0 w-full h-[70px] lg:h-[90px] xl:h-[90px] bg-black/100 z-20 flex flex-col justify-start lg:justify-center xl:justify-center">
       <audio
@@ -309,14 +324,14 @@ const PlayerBar = () => {
           </button>
           {isBigScreen && (
             <div className="text-fontPrimary text-xl" onClick={handleToggleShuffle}>
-              <BsRepeat className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"}/>
+              <BsRepeat className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"} />
             </div>
           )}
           <div
             className="text-buttonPrimary text-xl cursor-pointer"
             onClick={handleLikeToggle}
           >
-            {currentTrack.is_favorite ? <FaHeart /> : <FaRegHeart />}
+            {currentTrack.is_like ? <FaHeart /> : <FaRegHeart />}
           </div>
           {isBigScreen && (
             <div className="relative" ref={dotsButtonRef}>
@@ -329,9 +344,8 @@ const PlayerBar = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className={`absolute right-0 w-40 bg-white divide-y divide-gray-100  dark:bg-gray-700 dark:divide-gray-600 shadow-lg rounded-md z-50 ${
-                    isDropdownAbove ? "bottom-full mb-2" : "top-full mt-2"
-                  }`}
+                  className={`absolute right-0 w-40 bg-white divide-y divide-gray-100  dark:bg-gray-700 dark:divide-gray-600 shadow-lg rounded-md z-50 ${isDropdownAbove ? "bottom-full mb-2" : "top-full mt-2"
+                    }`}
                 >
                   <ul
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -340,8 +354,8 @@ const PlayerBar = () => {
                     <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                       Add to Playlist
                     </li>
-                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                      Favorite
+                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer" onClick={currentTrack.is_favorite ? handleRemoveFromFavorite : handleAddToFavorite}>
+                     {currentTrack.is_favorite?"Remove Favorite": "Favorite"}
                     </li>
                     <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                       Share

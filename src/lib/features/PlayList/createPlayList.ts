@@ -9,6 +9,7 @@ import {
   PlaylistData,
   PlaylistState,
 } from "./types";
+import { errorToast, successToast } from "@/utils/toast";
 
 export const createPlaylist = createAsyncThunk<
   Playlist,
@@ -21,8 +22,7 @@ export const createPlaylist = createAsyncThunk<
       data: formData,
       includeToken: true,
     });
-    const data: CreatePlaylistResponse = response;
-    return data.response.data;
+    return response.data
   } catch (error: any) {
     return rejectWithValue(error?.message || "An error occurred");
   }
@@ -39,9 +39,13 @@ export const addSongToPlaylist = createAsyncThunk<
       data: formData,
       includeToken: true,
     });
+    if (response.code >= 200 && response.code < 300) {
+      successToast(response.messages[0]);
+      return response
+    } else {
+      errorToast(response.messages[0])
+    }
 
-    const data: AddSongToPlaylistResponse = response;
-    return data.response.data;
   } catch (error: any) {
     return rejectWithValue(error?.message || "An error occurred");
   }
@@ -69,24 +73,41 @@ export const removeSongFromPlaylist = createAsyncThunk<
 });
 
 export const fetchPlaylists = createAsyncThunk<PlaylistData[], void, { rejectValue: string }>(
-    'playlist/fetchPlaylists',
-    async (_, { rejectWithValue }) => {
-      try {
-        const response = await get({
-          url: 'playlist/index',
-          includeToken: true,
-        });
-  
-        const data: FetchPlaylistsResponse = response;
-        return data.response.data; // Return the playlists array
-      } catch (error: any) {
-        return rejectWithValue(error?.message || 'An error occurred while fetching playlists');
-      }
+  'playlist/fetchPlaylists',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await get({
+        url: 'playlist/index',
+        includeToken: true,
+      });
+      console.log("response==>",response);
+      
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error?.message || 'An error occurred while fetching playlists');
     }
-  );
+  }
+);
+
+export const fetchPlaylistDetails = createAsyncThunk<
+  PlaylistData,
+  number,
+  { rejectValue: string }
+>("playlist/fetchPlaylistDetails", async (playlistId, { rejectWithValue }) => {
+  try {
+    const response = await get({
+      url: `playlist/view/${playlistId}`,
+      includeToken: true,
+    });
+    return response.data
+  } catch (error: any) {
+    return rejectWithValue(error?.message || "Failed to fetch playlist details");
+  }
+});
 
 const initialState: PlaylistState = {
   playlists: [],
+  playlistDetails: null, 
   loading: false,
   error: null,
 };
@@ -147,12 +168,25 @@ const playlistSlice = createSlice({
       })
       .addCase(fetchPlaylists.fulfilled, (state, action: PayloadAction<PlaylistData[]>) => {
         state.loading = false;
-        state.playlists = action.payload; 
+        state.playlists = action.payload;
       })
       .addCase(fetchPlaylists.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch playlists';
-      });
+      })
+        // Fetch playlist details actions
+        .addCase(fetchPlaylistDetails.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(fetchPlaylistDetails.fulfilled, (state, action: PayloadAction<PlaylistData>) => {
+          state.loading = false;
+          state.playlistDetails = action.payload;
+        })
+        .addCase(fetchPlaylistDetails.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload || "Failed to fetch playlist details";
+        })
   },
 });
 

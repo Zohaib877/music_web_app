@@ -17,12 +17,12 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const { currentTrack } = useSelector((state: RootState) => state.mediaPlayer);
   const [showPlayerBar, setShowPlayerBar] = useState(false);
-  
+
   useEffect(() => {
     const restrictedPaths = ['/player/audio', '/player/video'];
     setShowPlayerBar(
-      currentTrack.file_path !== "" && 
-      currentTrack.type === 'audio' && 
+      currentTrack.file_path !== "" &&
+      currentTrack.type === 'audio' &&
       !restrictedPaths.some(path => pathname.startsWith(path))
     );
   }, [pathname, currentTrack]);
@@ -37,7 +37,7 @@ const AppLayout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
       <SearchModel />
-      {pathname === "/" && <Footer />}
+      {pathname === "/" && <div className={pathname === "/" ? `mb-${showPlayerBar ? '20' : '0'}` : ''}> <Footer /></div>}
       {showPlayerBar && <PlayerBar />}
     </>
   );

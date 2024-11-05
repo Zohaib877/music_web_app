@@ -20,7 +20,7 @@ const Sidebar = () => {
     <>
       {/* Large Sidebar Start */}
       <div
-        className={`hidden lg:flex xl:flex flex-col z-10 fixed top-0 ${
+        className={`hidden lg:flex xl:flex flex-col z-20 fixed top-0 ${
           isOpen ? "w-72" : "w-22 overflow-hidden"
         } h-full bg-sideBarBackground transition-all duration-700 px-6 py-5`}
       >

@@ -38,7 +38,6 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
         ))}
       </div>
 
-      {/* Tab Content */}
       <div className="py-10">
         {tabs[selectedIndex].content}
       </div>

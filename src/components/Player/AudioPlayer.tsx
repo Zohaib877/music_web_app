@@ -269,7 +269,7 @@ const AudioPlayer = () => {
           className="text-buttonPrimary text-xl cursor-pointer"
           onClick={handleLikeToggle}
         >
-          {currentTrack.is_favorite ? (
+          {currentTrack.is_like ? (
             <FaHeart size={35} />
           ) : (
             <FaRegHeart size={35} />

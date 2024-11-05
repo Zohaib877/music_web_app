@@ -106,7 +106,7 @@ const Songs: React.FC<SongsProps> = ({
   type,
   heading,
   link,
-  dot = true,
+  dot = false,
   arrow = true,
   slides,
 }) => {

@@ -10,6 +10,9 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoDownloadOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
+import AddToPlayListModal from "../Modal/AddToPlayListModal";
+import { addFavourite, removeFavourite } from "@/lib/features/Favourite/favouriteSlice";
+import { errorToast, successToast } from "@/utils/toast";
 
 interface SongQueueCardProps {
   item: MediaItem;
@@ -27,7 +30,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
   const router = useRouter();
   const { currentTrack } = useSelector((state: RootState) => state.mediaPlayer);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown visibility
-
+  const [onPlaylistSelect, setPlaylistSelect] = useState(false)
   const handlePlay = () => {
     store.dispatch(playTrack(item));
   };
@@ -48,9 +51,8 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
     link.click();
   };
   const handleShare = async () => {
-    const songUrl = `http://localhost:3000/player/audio/${item.id}`; // Construct your song URL here
+    const songUrl = `http://localhost:3000/player/audio/${item.id}`;
     if (navigator.share) {
-      // Use the Web Share API if supported
       try {
         await navigator.share({
           title: item.title,
@@ -62,7 +64,6 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
         console.error("Error sharing the song:", err);
       }
     } else {
-      // Fallback for browsers that do not support the Web Share API
       navigator.clipboard.writeText(songUrl).then(() => {
         alert("Song link copied to clipboard!");
       }).catch(err => {
@@ -70,6 +71,27 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
       });
     }
   };
+
+  const handleAddToFavorite = () => {
+    dispatch(addFavourite({ mediaId: item.id, type: "song" })).unwrap().then((res) => {
+      successToast("Song added to favorites");
+      setDropdownOpen(!dropdownOpen)
+    }).catch((err) => {
+      errorToast('Song is already in your favorites');
+      setDropdownOpen(!dropdownOpen)
+    })
+  };
+
+  const handleRemoveFromFavorite = () => {
+    dispatch(removeFavourite({ mediaId: item.id, type: "song" })).unwrap().then((res) => {
+      successToast("Song removed from favorites");
+      setDropdownOpen(!dropdownOpen)
+    }).catch((err) => {
+      errorToast('Song not found in your favorites');
+      setDropdownOpen(!dropdownOpen)
+    })
+  };
+
   return (
     <div className={`h-auto rounded-lg lg:rounded-full ${isOpen ? "bg-black/40" : "bg-cardDisabled/50"} flex flex-col justify-between items-center my-2 lg:px-4 xl:px-4 divide-y relative`}>
       <div className="flex w-full justify-between items-center pb-3 py-2">
@@ -111,7 +133,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
               <IoDownloadOutline />
             </div>
             <div className="text-buttonPrimary text-xl cursor-pointer" onClick={handleLikeToggle}>
-              {item.is_favorite ? <FaHeart /> : <FaRegHeart />}
+              {item.is_like ? <FaHeart /> : <FaRegHeart />}
             </div>
             <div className="relative">
               <div className="text-fontPrimary text-xl cursor-pointer" onClick={handleDropdownToggle}>
@@ -120,11 +142,15 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 shadow-lg rounded-md overflow-hidden z-10  text-gray-700 dark:text-gray-200 dark:bg-gray-700 dark:divide-gray-600">
                   <ul>
-                    <li className="px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                    <li className="px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      onClick={() => {
+                        setDropdownOpen(!dropdownOpen)
+                        setPlaylistSelect(true)
+                      }}>
                       Add to Playlist
                     </li>
-                    <li className="px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                      Favorite
+                    <li className="px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={item.is_favorite ? handleRemoveFromFavorite : handleAddToFavorite}>
+                      {item.is_favorite ? "Remove Favorite" : ""}
                     </li>
                     <li className="px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={handleShare}>
                       Share
@@ -150,6 +176,11 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
           </div>
         </div>
       )}
+      <AddToPlayListModal
+        isOpen={onPlaylistSelect}
+        onClose={() => setPlaylistSelect(false)}
+        mediaId={item.id}
+      />
     </div>
   );
 };

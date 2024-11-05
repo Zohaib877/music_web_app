@@ -10,7 +10,7 @@ const AuthLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {/* Header Section */}
-      <div className="w-full mt-10 mb-4 lg:mt-12 lg:mb-2 lg:mx-32 flex justify-center lg:justify-start">
+      <div className="w-full lg:mx-32 flex justify-center lg:justify-start">
         <div className="relative w-40 h-40">
           <Image
             src={require("../../../public/assets/images/brand/Logo.png")}

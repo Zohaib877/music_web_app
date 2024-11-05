@@ -7,6 +7,10 @@ import otpSlice from './features/Auth/otpSlice';
 import topSlice from './features/Tops/TopsSlice';
 import mediaPlayerReducer from './features/Player/mediaPlayerSlice';
 import homeReducer from './features/Home/homeSlice';
+import playlistSlice from './features/PlayList/createPlayList';
+import favouriteSlice from './features/Favourite/favouriteSlice';
+import recentlyPlayedSlice from './features/RecentlyPlayed/recentlyPlayedSlice';
+import artistSlice from './features/Artist/artistSlice';
 
 const store = configureStore({
   reducer: {
@@ -18,6 +22,10 @@ const store = configureStore({
     topMedis: topSlice,
     mediaPlayer: mediaPlayerReducer,
     home: homeReducer,
+    playList: playlistSlice,
+    favourite: favouriteSlice,
+    recentlyPlayed: recentlyPlayedSlice,
+    artist: artistSlice,
   },
 });
 

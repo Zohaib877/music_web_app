@@ -29,6 +29,7 @@ const initialState: MediaState = {
     recently_played_count: 0,
     likes: 0,
     is_favorite: false,
+    is_like: false
   },
   media_duration: "",
   isPlaying: false,
@@ -99,8 +100,8 @@ const mediaPlayerSlice = createSlice({
       state.queue = action.payload;
     },
     removeFromQueue: (state, action: PayloadAction<number>) => {
-      state.queue.splice(action.payload, 1);
-    },
+      state.queue = state.queue.filter(track => track.id !== action.payload);
+  },
     clearQueue: (state) => {
       state.queue = [];
     },
@@ -164,15 +165,15 @@ const mediaPlayerSlice = createSlice({
       .addCase(toggleLike.fulfilled, (state, action) => {
         const { mediaId, success } = action.payload;
         if (success && state.currentTrack.id === mediaId) {
-          state.currentTrack.is_favorite = !state.currentTrack.is_favorite;
-          state.currentTrack.likes += state.currentTrack.is_favorite ? 1 : -1;
+          state.currentTrack.is_like = !state.currentTrack.is_like;
+          state.currentTrack.likes += state.currentTrack.is_like ? 1 : -1;
         }
 
         // Find and update the liked song in the queue
         const songInQueue = state.queue.find((track) => track.id === mediaId);
         if (songInQueue) {
-          songInQueue.is_favorite = !songInQueue.is_favorite;
-          songInQueue.likes += songInQueue.is_favorite ? 1 : -1;
+          songInQueue.is_like = !songInQueue.is_like;
+          songInQueue.likes += songInQueue.is_like ? 1 : -1;
         }
 
         state.loading = false;

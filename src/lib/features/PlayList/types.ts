@@ -26,6 +26,8 @@ export interface AddSongResponse {
     playlists: Playlist[];
     loading: boolean;
     error: string | null;
+    playlistDetails: PlaylistData | null;
+
   }
   
   export interface CreatePlaylistResponse {
