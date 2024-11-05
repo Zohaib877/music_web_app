@@ -9,6 +9,7 @@ import { Artist } from "@/lib/features/Home/homeSlice";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 enum types {
   IMAGE,
@@ -107,11 +108,16 @@ const Artists: React.FC<SongsProps> = ({
 }) => {
   const { loading } = useSelector((state: RootState) => state.home);
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
-  const [ratio, setRatio] = useState(16/9) 
+  const router = useRouter();
+  const [ratio, setRatio] = useState(16 / 9)
   const settings = useMemo(
     () => getSettings(type, dot, arrow),
     [type, dot, arrow]
   );
+
+  const handleClick = (item: Artist) => {
+    router.push(`/artists/details/${item.id}`);
+  }
 
   if (loading) {
     return (
@@ -171,19 +177,19 @@ const Artists: React.FC<SongsProps> = ({
           {slides.map((item, index) => (
             <div
               key={`${item.id}-${index}`}
-              className={`flex flex-col justify-center items-center hover:scale-105 ${
-                type === types.BANNER
-                  ? `h-80 w-64`
-                  : isBigScreen
+              className={`flex flex-col justify-center items-center hover:scale-105 ${type === types.BANNER
+                ? `h-80 w-64`
+                : isBigScreen
                   ? `h-70 w-64`
                   : `h-28 w-28`
-              } px-4 py-3 my-3`}
+                } px-4 py-3 my-3`}
+              onClick={() => handleClick(item)}
             >
               <Image
                 src={item.image}
                 alt={item.name}
                 width={type === types.BANNER ? 450 : isBigScreen ? 200 : 121}
-                height={type === types.BANNER ? 450 : isBigScreen ? 200/ ratio: 73}
+                height={type === types.BANNER ? 450 : isBigScreen ? 200 / ratio : 73}
                 className="mb-3 mx-auto cursor-pointer rounded-sm"
                 objectFit="contain"
                 style={{
@@ -191,16 +197,15 @@ const Artists: React.FC<SongsProps> = ({
                   aspectRatio: "16/9",
                 }}
                 layout="fixed"
-                onLoadingComplete={({ naturalWidth, naturalHeight }) => 
+                onLoadingComplete={({ naturalWidth, naturalHeight }) =>
                   setRatio(naturalWidth / naturalHeight)
                 }
               />
               {item.name && (
                 <p
-                  className={`text-fontPrimary ${
-                    isBigScreen ? "text-base font-medium" : "text-xs font-thin"
-                  } text-center cursor-pointer hover:underline`}
-                  //   onClick={() => handlePlay(item)}
+                  className={`text-fontPrimary ${isBigScreen ? "text-base font-medium" : "text-xs font-thin"
+                    } text-center cursor-pointer hover:underline`}
+                //   onClick={() => handlePlay(item)}
                 >
                   {item.name}
                 </p>

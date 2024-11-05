@@ -38,9 +38,6 @@ export const addFavourite = createAsyncThunk(
             url: `favorites/${mediaId}/${type}`,
             includeToken: true,
         });
-        if (response.response.code === 200) {
-            successToast('Song added to favorites');
-        }
         return { mediaId, success: response.code === 200 };
     }
 );
@@ -86,7 +83,7 @@ const favouriteSlice = createSlice({
                 if (action.payload.success) {
                     const songIndex = state.favoriteSongs.findIndex(song => song.id === action.payload.mediaId);
                     if (songIndex > -1) {
-                        state.favoriteSongs[songIndex].is_favorite = true; // Mark as favorite
+                        state.favoriteSongs[songIndex].is_favorite = true;
                     } else {
                         // If not already in the list, you may want to add it
                         // You can fetch the new song's details and add it if needed

@@ -1,16 +1,27 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Artist } from "../Home/homeSlice";
 import { get } from "@/utils/axios";
+import { MediaItem } from "../Tops/TopsSlice";
 
 interface GroupedArtists {
-    [key: string]: Artist[]; // Changed to directly hold arrays of artists for each language category
+    [key: string]: Artist[];
 }
-
+interface ArtistDetails {
+    id: number;
+    name: string;
+    bio: string;
+    image: string;
+    is_favorite: boolean;
+    media: MediaItem[]; 
+}
 interface ArtistState {
-    groupedArtists: GroupedArtists; // No longer needs language metadata
+    groupedArtists: GroupedArtists;
     topArtists: Artist[];
     loading: boolean;
     error: string | null;
+    artistDetails: ArtistDetails | null; // State for artist details
+    loadingArtistDetails: boolean; // State for loading artist details
+    errorArtistDetails: string | null; // Error state for artist details
 }
 
 export const fetchArtists = createAsyncThunk<
@@ -33,11 +44,31 @@ export const fetchArtists = createAsyncThunk<
 });
 
 
+export const fetchArtistDetails = createAsyncThunk<
+    ArtistDetails,
+    number,
+    { rejectValue: string }
+>("artists/fetchArtistDetails", async (artistId, { rejectWithValue }) => {
+    try {
+        const response = await get({
+            url: `artist/media/${artistId}`,
+            includeToken: true,
+        });
+        return response.data
+    } catch (error: any) {
+        return rejectWithValue(error?.message || "Failed to fetch artist details");
+    }
+});
+
+
 const initialState: ArtistState = {
     groupedArtists: {},
     topArtists: [],
     loading: false,
     error: null,
+    artistDetails: null,
+    loadingArtistDetails: false,
+    errorArtistDetails: null,
 };
 
 const artistSlice = createSlice({
@@ -54,13 +85,25 @@ const artistSlice = createSlice({
                 fetchArtists.fulfilled,
                 (state, action: PayloadAction<{ grouped_artists: GroupedArtists; top_artists: Artist[] }>) => {
                     state.loading = false;
-                    state.groupedArtists = action.payload.grouped_artists; // This now holds the language categories as keys
+                    state.groupedArtists = action.payload.grouped_artists;
                     state.topArtists = action.payload.top_artists;
                 }
             )
             .addCase(fetchArtists.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to fetch artists";
+            })
+            .addCase(fetchArtistDetails.pending, (state) => {
+                state.loadingArtistDetails = true;
+                state.errorArtistDetails = null;
+            })
+            .addCase(fetchArtistDetails.fulfilled, (state, action: PayloadAction<ArtistDetails>) => {
+                state.loadingArtistDetails = false;
+                state.artistDetails = action.payload
+            })
+            .addCase(fetchArtistDetails.rejected, (state, action) => {
+                state.loadingArtistDetails = false;
+                state.errorArtistDetails = action.payload || "Failed to fetch artist details";
             });
     },
 });

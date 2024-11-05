@@ -1,16 +1,15 @@
 "use client";
-import { useEffect, useState } from 'react';
-import TabContent from "@/components/Tabs/TabContent";
+import { useEffect } from 'react';
 import Tabs from "@/components/Tabs/Tabs";
 import AppLayout from "@/containers/layout/AppLayout";
 import Link from "next/link";
 import { useDispatch, useSelector } from 'react-redux';
-import CreatePlaylistModal from '@/components/Modal/CreatePlaylistModal';
-import { createPlaylist, fetchPlaylists } from '@/lib/features/PlayList/createPlayList';
+import { fetchPlaylists } from '@/lib/features/PlayList/createPlayList';
 import { AppDispatch, RootState } from '@/lib/store';
 import { fetchFavoriteSongs } from '@/lib/features/Favourite/favouriteSlice';
 import SongCard from '@/components/SongCard/SongCard';
 import { fetchRecentlyPlayed } from '@/lib/features/RecentlyPlayed/recentlyPlayedSlice';
+import PlayListContent from '@/components/Tabs/PlayListContent';
 
 const MyLibrary = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -18,15 +17,22 @@ const MyLibrary = () => {
     const { favoriteSongs } = useSelector((state: RootState) => state.favourite);
     const { media, currentPage } = useSelector((state: RootState) => state.recentlyPlayed);
 
-
     useEffect(() => {
-        dispatch(fetchPlaylists());
-        dispatch(fetchFavoriteSongs());
-        dispatch(fetchRecentlyPlayed(currentPage));
-    }, [])
+        const fetchData = async () => {
+            try {
+                await dispatch(fetchPlaylists());
+                await dispatch(fetchFavoriteSongs());
+                await dispatch(fetchRecentlyPlayed(currentPage));
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+    
+        fetchData();
+    }, [dispatch, currentPage]);
 
     const tabs = [
-        { label: 'My Playlist', href: '#', content: <TabContent items={playlists} /> },
+        { label: 'My Playlist', href: '#', content: <PlayListContent items={playlists} /> },
         { label: 'Favourite Songs', href: '#', content: <SongCard items={favoriteSongs} /> },
         { label: 'Recently Played', href: '#', content: <SongCard items={media} /> },
     ];
@@ -46,8 +52,6 @@ const MyLibrary = () => {
                     </div>
                 </div>
                 <Tabs tabs={tabs} />
-
-               
             </div>
         </AppLayout>
     );

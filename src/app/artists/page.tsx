@@ -1,6 +1,5 @@
 "use client";
 import Artists from "@/components/Artists/Artists";
-import Songs from "@/components/Songs/Songs";
 import AppLayout from "@/containers/layout/AppLayout";
 import { fetchArtists } from "@/lib/features/Artist/artistSlice";
 import { AppDispatch, RootState } from "@/lib/store";
@@ -14,10 +13,9 @@ const Artist = () => {
   useEffect(() => {
     dispatch(fetchArtists());
   }, [dispatch]);
-
-  if (loading) {
+  const selelition = () => {
     return (
-      <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly">
+      <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex justify-center items-center ">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-1 mb-9 w-full">
           {Array.from({ length: 5 }).map((_, index) => (
             <div
@@ -43,23 +41,31 @@ const Artist = () => {
           ))}
         </div>
       </div>
-    );
+    )
   }
+
   return (
     <AppLayout>
       <div className="w-full h-auto py-10">
-        <Artists type={0} heading="Top Artists" slides={topArtists} />
-        {Object.entries(groupedArtists).map(([language, artists]) => (
-          language !== "top_artists" && (
-            <div key={language} className="my-8">
-              <Artists
-                type={0}
-                heading={`${language} Artists`} 
-                slides={artists} 
-              />
-            </div>
+        {loading ? selelition() :
+          (
+            <>
+              <Artists type={0} heading="Top Artists" slides={topArtists} />
+              {groupedArtists && Object.entries(groupedArtists).map(([language, artists]) => (
+                language !== "top_artists" && (
+                  <div key={language} className="my-8">
+                    <Artists
+                      type={0}
+                      heading={`${language} Artists`}
+                      slides={artists}
+                    />
+                  </div>
+                )
+              ))}
+            </>
           )
-        ))}
+        }
+
       </div>
     </AppLayout>
   )
