@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { ReactNode } from "react";
 
 interface LayoutProps {
@@ -7,17 +8,18 @@ interface LayoutProps {
 }
 
 const AuthLayout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter();
   return (
     <>
       {/* Header Section */}
       <div className="w-full lg:mx-32 flex justify-center lg:justify-start">
-        <div className="relative w-40 h-40">
+        <div className="relative w-40 h-40 cursor-pointer" onClick={()=>router.push("/")}> 
           <Image
             src={require("../../../public/assets/images/brand/Logo.png")}
             alt="Music App Logo"
-            fill
-            sizes="(max-width: 640px) 40px, (min-width: 640px) 40px"
-            style={{ objectFit: "contain" }}
+            width={160} // Tailwind w-40 is 10rem, which is 160px
+            height={160}
+            quality={100} // Optional: Increases clarity
           />
         </div>
       </div>

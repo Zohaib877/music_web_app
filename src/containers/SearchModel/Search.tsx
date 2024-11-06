@@ -1,72 +1,42 @@
 "use client";
 import Songs from "@/components/Songs/Songs";
 import { closeSearchModel } from "@/lib/features/Search/searchModelSlice";
-import { RootState } from "@/lib/store";
+import { AppDispatch, RootState } from "@/lib/store";
 import { IoClose, IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { closeSidebar } from "@/lib/features/Sidebar/SidebarSlice";
-
-interface Slide {
-  url: string;
-  title?: string;
-}
-
-const SongSlides: Slide[] = [
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-];
+import SearchSong from "@/components/Songs/SearchSong";
 
 const SearchModel = () => {
-  const {trendingSongs} = useSelector((state: RootState) => state.home);
+  const { trendingSongs } = useSelector((state: RootState) => state.home);
   const isOpen = useSelector((state: RootState) => state.searchModel.isOpen);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    dispatch(closeSearchModel());
-    setSearchQuery("");
     router.push("/search");
-    console.log("Search submitted with query:", searchQuery);
+    dispatch(closeSearchModel()); // Closes model on search
+    setSearchQuery("");
   };
 
   useEffect(() => {
     if (isOpen) {
       dispatch(closeSidebar());
     }
+    const handleRouteChange = () => {
+      if (isOpen) {
+        dispatch(closeSearchModel());
+      }
+    };
+    window.addEventListener("popstate", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("popstate", handleRouteChange);
+    };
   }, [isOpen, dispatch]);
 
   if (!isOpen) return null;
@@ -110,12 +80,7 @@ const SearchModel = () => {
 
       {/* Top Trending */}
       <div className="w-full flex flex-col justify-between items-center py-7">
-        {/* Top Trending Heading */}
-        <h1 className="w-full text-fontPrimary text-center font-bold max-md:text-2xl text-3xl">
-          Top Trending
-        </h1>
-
-        <Songs type={0} dot={false} arrow={false} slides={trendingSongs} />
+        <SearchSong type={0} dot={false} arrow={false} slides={trendingSongs} />
       </div>
     </div>
   );

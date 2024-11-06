@@ -129,7 +129,7 @@ const LoginForm: React.FC = () => {
             </div>
 
           </div>
-          <div className="flex items-center justify-between my-4 w-full">
+          {/* <div className="flex items-center justify-between my-4 w-full">
             <label className="inline-flex items-center">
               <input
                 type="checkbox"
@@ -143,7 +143,7 @@ const LoginForm: React.FC = () => {
             >
               Forgot Password?
             </Link>
-          </div>
+          </div> */}
           <button
             type="submit"
             disabled={loading}

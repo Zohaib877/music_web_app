@@ -11,6 +11,7 @@ import playlistSlice from './features/PlayList/createPlayList';
 import favouriteSlice from './features/Favourite/favouriteSlice';
 import recentlyPlayedSlice from './features/RecentlyPlayed/recentlyPlayedSlice';
 import artistSlice from './features/Artist/artistSlice';
+import searchSlice from './features/Search/searchSlice';
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     favourite: favouriteSlice,
     recentlyPlayed: recentlyPlayedSlice,
     artist: artistSlice,
+    searchSong: searchSlice,
   },
 });
 
