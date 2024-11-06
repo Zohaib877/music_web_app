@@ -1,3 +1,5 @@
+import { MediaItem } from "../Tops/TopsSlice";
+
 export interface AddSongResponse {
     media_id: string;
     playlist_id: string;
@@ -44,6 +46,7 @@ export interface AddSongResponse {
     name: string;
     created_at: string;
     updated_at: string;
+    media: MediaItem[]
   }
 
   export interface FetchPlaylistsResponse {

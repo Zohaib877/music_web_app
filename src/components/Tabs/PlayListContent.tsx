@@ -6,12 +6,14 @@ import CreatePlaylistModal from "../Modal/CreatePlaylistModal";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store";
 import { createPlaylist } from "@/lib/features/PlayList/createPlayList";
+import { useRouter } from "next/navigation";
 
 interface TabContentProps {
   items: PlaylistData[];
 }
 
 const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
+  const route = useRouter()
   const dispatch = useDispatch<AppDispatch>();
   const playlists = useSelector((state: RootState) => state.playList.playlists);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -39,11 +41,12 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
         </div>
       )}
 
-      <div className="w-full h-auto py-10 grid justify-items-center grid-flow-row-dense grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1">
+      <div className="w-full h-auto py-10 grid justify-items-center grid-flow-row-dense grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1 cursor-pointer">
         {items.map((item, index) => (
           <div
             key={index}
             className="flex flex-col justify-center items-center h-auto w-fit px-4 py-3"
+            onClick={()=> route.push(`/playlist/${item.id}`)}
           >
             <Image
               src={require('../../../public/assets/images/thumbnail/artist_mobile.png')}

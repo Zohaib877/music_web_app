@@ -33,6 +33,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
   handleToggle,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const token = useSelector((state: RootState) => state.user.token);
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
   const router = useRouter();
   const { currentTrack } = useSelector((state: RootState) => state.mediaPlayer);
@@ -63,7 +64,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
   };
 
   const handleShare = async () => {
-    const songUrl = `http://localhost:3000/player/audio/${item.id}`;
+    const songUrl = item.file_path;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -197,25 +198,30 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 shadow-lg rounded-md overflow-hidden z-10 text-gray-700 dark:text-gray-200 dark:bg-gray-700 dark:divide-gray-600">
                   <ul>
-                    <li
-                      className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      onClick={() => {
-                        setDropdownOpen(false);
-                        setPlaylistSelect(true);
-                      }}
-                    >
-                      Add to Playlist
-                    </li>
-                    <li
-                      className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      onClick={
-                        item.is_favorite
-                          ? handleRemoveFromFavorite
-                          : handleAddToFavorite
-                      }
-                    >
-                      {item.is_favorite ? "Remove Favorite" : "Favorite"}
-                    </li>
+                    {token && (
+                      <>
+                        <li
+                          className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            setPlaylistSelect(true);
+                          }}
+                        >
+                          Add to Playlist
+                        </li>
+                        <li
+                          className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          onClick={
+                            item.is_favorite
+                              ? handleRemoveFromFavorite
+                              : handleAddToFavorite
+                          }
+                        >
+                          {item.is_favorite ? "Remove Favorite" : "Favorite"}
+                        </li>
+                      </>
+                    )}
+
                     <li
                       className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       onClick={handleShare}

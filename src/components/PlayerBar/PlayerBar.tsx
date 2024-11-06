@@ -1,5 +1,8 @@
 "use client";
-import { addFavourite, removeFavourite } from "@/lib/features/Favourite/favouriteSlice";
+import {
+  addFavourite,
+  removeFavourite,
+} from "@/lib/features/Favourite/favouriteSlice";
 import {
   pauseTrack,
   playNext,
@@ -31,8 +34,16 @@ import { useDispatch, useSelector } from "react-redux";
 
 const PlayerBar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentTrack, isPlaying, volume, mute, media_duration, currentTime, isShuffled } =
-    useSelector((state: RootState) => state.mediaPlayer);
+  const {
+    currentTrack,
+    isPlaying,
+    volume,
+    mute,
+    media_duration,
+    currentTime,
+    isShuffled,
+  } = useSelector((state: RootState) => state.mediaPlayer);
+  const token = useSelector((state: RootState) => state.user.token);
   const router = useRouter();
   const [value, setValue] = useState<number>(0);
   const [track, setTrack] = useState<number>(0);
@@ -208,27 +219,56 @@ const PlayerBar = () => {
   const handleToggleShuffle = () => {
     dispatch(toggleShuffle());
   };
-  
+
   const handleAddToFavorite = () => {
-    dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" })).unwrap().then((res) => {
-      successToast("Song added to favorites");
-      setIsDropdownOpen(!isDropdownOpen)
-    }).catch((err) => {
-      errorToast('Song is already in your favorites');
-      setIsDropdownOpen(!isDropdownOpen)
-    })
+    dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" }))
+      .unwrap()
+      .then((res) => {
+        successToast("Song added to favorites");
+        setIsDropdownOpen(!isDropdownOpen);
+      })
+      .catch((err) => {
+        errorToast("Song is already in your favorites");
+        setIsDropdownOpen(!isDropdownOpen);
+      });
   };
 
   const handleRemoveFromFavorite = () => {
-    dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" })).unwrap().then((res) => {
-      successToast("Song added to favorites");
-      setIsDropdownOpen(!isDropdownOpen)
-    }).catch((err) => {
-      errorToast('Song is already in your favorites');
-      setIsDropdownOpen(!isDropdownOpen)
-    })
+    dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" }))
+      .unwrap()
+      .then((res) => {
+        successToast("Song added to favorites");
+        setIsDropdownOpen(!isDropdownOpen);
+      })
+      .catch((err) => {
+        errorToast("Song is already in your favorites");
+        setIsDropdownOpen(!isDropdownOpen);
+      });
   };
-
+  const handleShare = async () => {
+    const songUrl = currentTrack.file_path;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: currentTrack.title,
+          text: `Check out this song: ${currentTrack.title}`,
+          url: songUrl,
+        });
+        console.log("Song shared successfully!");
+      } catch (err) {
+        console.error("Error sharing the song:", err);
+      }
+    } else {
+      navigator.clipboard
+        .writeText(songUrl)
+        .then(() => {
+          alert("Song link copied to clipboard!");
+        })
+        .catch((err) => {
+          console.error("Error copying to clipboard:", err);
+        });
+    }
+  };
   return (
     <div className="fixed bottom-0 left-0 w-full h-[70px] lg:h-[90px] xl:h-[90px] bg-black/100 z-20 flex flex-col justify-start lg:justify-center xl:justify-center">
       <audio
@@ -306,7 +346,10 @@ const PlayerBar = () => {
           </div>
         )}
         <div className="w-1/2 lg:w-4/12 xl:w-4/12 flex justify-evenly items-center">
-          <button className="w-7 lg:w-10 xl:w-10 h-7 lg:h-10 xl:h-10 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center" onClick={handlePrevious}>
+          <button
+            className="w-7 lg:w-10 xl:w-10 h-7 lg:h-10 xl:h-10 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"
+            onClick={handlePrevious}
+          >
             <IoPlayBackOutline size={isBigScreen ? 22 : 15} />
           </button>
           <button
@@ -319,12 +362,22 @@ const PlayerBar = () => {
               <IoPlay size={isBigScreen ? 23 : 17} />
             )}
           </button>
-          <button className="w-7 lg:w-10 xl:w-10 h-7 lg:h-10 xl:h-10 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center" onClick={handleNext}>
+          <button
+            className="w-7 lg:w-10 xl:w-10 h-7 lg:h-10 xl:h-10 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"
+            onClick={handleNext}
+          >
             <IoPlayForwardOutline size={isBigScreen ? 22 : 15} />
           </button>
           {isBigScreen && (
-            <div className="text-fontPrimary text-xl" onClick={handleToggleShuffle}>
-              <BsRepeat className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"} />
+            <div
+              className="text-fontPrimary text-xl"
+              onClick={handleToggleShuffle}
+            >
+              <BsRepeat
+                className={
+                  isShuffled ? "text-buttonPrimary" : "text-fontPrimary"
+                }
+              />
             </div>
           )}
           <div
@@ -344,20 +397,35 @@ const PlayerBar = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className={`absolute right-0 w-40 bg-white divide-y divide-gray-100  dark:bg-gray-700 dark:divide-gray-600 shadow-lg rounded-md z-50 ${isDropdownAbove ? "bottom-full mb-2" : "top-full mt-2"
-                    }`}
+                  className={`absolute right-0 w-40 bg-white divide-y divide-gray-100  dark:bg-gray-700 dark:divide-gray-600 shadow-lg rounded-md z-50 ${
+                    isDropdownAbove ? "bottom-full mb-2" : "top-full mt-2"
+                  }`}
                 >
                   <ul
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="avatarButton"
                   >
-                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                      Add to Playlist
-                    </li>
-                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer" onClick={currentTrack.is_favorite ? handleRemoveFromFavorite : handleAddToFavorite}>
-                     {currentTrack.is_favorite?"Remove Favorite": "Favorite"}
-                    </li>
-                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                    {token && (
+                      <>
+                        <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                          Add to Playlist
+                        </li>
+                        <li
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer"
+                          onClick={
+                            currentTrack.is_favorite
+                              ? handleRemoveFromFavorite
+                              : handleAddToFavorite
+                          }
+                        >
+                          {currentTrack.is_favorite
+                            ? "Remove Favorite"
+                            : "Favorite"}
+                        </li>
+                      </>
+                    )}
+
+                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={handleShare}>
                       Share
                     </li>
                   </ul>
