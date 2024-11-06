@@ -22,6 +22,7 @@ export interface AddSongResponse {
     user_id: number;
     created_at: string;
     updated_at: string;
+    media: MediaItem[]; // Make `media` optional
   }
   
   export interface PlaylistState {
