@@ -1,27 +1,30 @@
-import TabContent from "@/components/Tabs/TabContent";
+"use client"
+import LanguagesContent from "@/components/Tabs/LanguagesContent";
 import AppLayout from "@/containers/layout/AppLayout";
-
-const tabContents = [
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'All'},
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'Urdu'},
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'English'},
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'Punjabi'},
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'Pashto'},
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'Sindhi'},
-    { src: '/assets/images/thumbnail/language.png', alt: 'Slide 1', text: 'sariki'},
-];
+import { fetchLanguages } from "@/lib/features/language/languageSlice";
+import { AppDispatch, RootState } from "@/lib/store";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const Language = () => {
-    return(
+    const dispatch = useDispatch<AppDispatch>();
+    const { languages, loading, error } = useSelector((state: RootState) => state.languages);
+
+    useEffect(() => {
+        dispatch(fetchLanguages());
+    }, [dispatch]);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    return (
         <AppLayout>
             <div className="w-full h-auto">
-                {/* Header Title & Buttons */}
                 <div className="w-full h-auto flex max-md:flex-col justify-between items-center px-6">
                     <h1 className="text-fontPrimary text-3xl font-bold py-5">Language</h1>
                 </div>
-
-                <TabContent items={tabContents} />
+                <LanguagesContent item={languages} />
             </div>
         </AppLayout>
     )
