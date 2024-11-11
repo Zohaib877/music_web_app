@@ -57,7 +57,7 @@ const AudioPlayerPage = ({ params }: { params: Params }) => {
                   key={item.id}
                   data={item}
                   queue={artistDetails?.media}
-                  isOpen={openCardId === item.id}
+                  isOpen={openCardId}
                   handleToggle={() => handleToggle(item.id)}
                 />
               ))}

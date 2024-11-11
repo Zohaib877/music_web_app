@@ -15,7 +15,7 @@ const Playlist = ({ params }: { params: Params }) => {
   const { playlistDetails, loading } = useSelector(
     (state: RootState) => state.playList
   );
-  const [openCardId, setOpenCardId] = useState<Number | null>(null);
+  const [openCardId, setOpenCardId] = useState<number | null>(null);
   const animationContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const Playlist = ({ params }: { params: Params }) => {
                 key={index + 1}
                 data={_}
                 queue={playlistDetails?.media}
-                isOpen={openCardId === _.id}
+                isOpen={openCardId}
                 handleToggle={() => handleToggle(_.id)}
               />
             ))}

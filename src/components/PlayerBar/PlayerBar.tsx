@@ -410,18 +410,6 @@ const PlayerBar = () => {
                         <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                           Add to Playlist
                         </li>
-                        <li
-                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer"
-                          onClick={
-                            currentTrack.is_favorite
-                              ? handleRemoveFromFavorite
-                              : handleAddToFavorite
-                          }
-                        >
-                          {currentTrack.is_favorite
-                            ? "Remove Favorite"
-                            : "Favorite"}
-                        </li>
                       </>
                     )}
 

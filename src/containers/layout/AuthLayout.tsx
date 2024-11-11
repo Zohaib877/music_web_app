@@ -12,7 +12,7 @@ const AuthLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {/* Header Section */}
-      <div className="w-full lg:mx-32 flex justify-center lg:justify-start">
+      {/* <div className="w-full lg:mx-32 flex justify-center lg:justify-start">
         <div className="relative w-40 h-40 cursor-pointer" onClick={()=>router.push("/")}> 
           <Image
             src={require("../../../public/assets/images/brand/Logo.png")}
@@ -22,9 +22,9 @@ const AuthLayout: React.FC<LayoutProps> = ({ children }) => {
             quality={100} // Optional: Increases clarity
           />
         </div>
-      </div>
+      </div> */}
       {/* Content Section */}
-      <div className="flex flex-col flex-1">{children}</div>
+      <div className=" content-center">{children}</div>
     </>
   );
 };

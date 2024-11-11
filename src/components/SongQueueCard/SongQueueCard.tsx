@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   addQueueList,
   playTrack,
+  removeFromQueue,
   toggleLike,
 } from "@/lib/features/Player/mediaPlayerSlice";
 import { MediaItem } from "@/lib/features/Tops/TopsSlice";
@@ -87,7 +88,9 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
         });
     }
   };
-
+  const handleRemoveFromQueue = (id: any) => {
+    dispatch(removeFromQueue(id));
+  };
   const handleAddToFavorite = () => {
     dispatch(addFavourite({ mediaId: item.id, type: "song" }))
       .unwrap()
@@ -209,19 +212,15 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
                         >
                           Add to Playlist
                         </li>
-                        <li
-                          className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                          onClick={
-                            item.is_favorite
-                              ? handleRemoveFromFavorite
-                              : handleAddToFavorite
-                          }
-                        >
-                          {item.is_favorite ? "Remove Favorite" : "Favorite"}
-                        </li>
                       </>
                     )}
 
+                    <li
+                      className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      onClick={() => handleRemoveFromQueue(item.id)}
+                    >
+                      Remove from queue
+                    </li>
                     <li
                       className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       onClick={handleShare}

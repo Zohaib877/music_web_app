@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Search = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [openCardId, setOpenCardId] = useState<Number | null>(null);
+  const [openCardId, setOpenCardId] = useState<number | null>(null);
   const { results, query, pagination, loading } = useSelector(
     (state: RootState) => state.searchSong
   );
@@ -46,7 +46,7 @@ const Search = () => {
             key={index + 1}
             data={_}
             queue={results}
-            isOpen={openCardId === _.id}
+            isOpen={openCardId}
             handleToggle={() => handleToggle(_.id)}
           />
         ))}
