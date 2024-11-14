@@ -14,7 +14,7 @@ interface LanguageMediaProps {
 const LanguageMediaComponent = ({ params }: { params: LanguageMediaProps }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { id: ids, name, audio, movie, video, loading, error } = useSelector((state: RootState) => state.languageMedia);
-    const [openCardId, setOpenCardId] = useState<Number | null>(null);
+    const [openCardId, setOpenCardId] = useState<number | null>(null);
 
     useEffect(() => {
         dispatch(fetchLanguageMedia(params.id));
@@ -43,8 +43,8 @@ const LanguageMediaComponent = ({ params }: { params: LanguageMediaProps }) => {
                                             key={index + 1}
                                             data={_}
                                             queue={audio}
-                                            isOpen={openCardId === _.id}
-                                            handleToggle={() => handleToggle(_.id)}
+                                            isOpen={openCardId}
+                                            handleToggle={() => handleToggle(_.id)} 
                                         />
                                     ))
                                 }
@@ -66,7 +66,7 @@ const LanguageMediaComponent = ({ params }: { params: LanguageMediaProps }) => {
                                             key={index + 1}
                                             data={_}
                                             queue={video}
-                                            isOpen={openCardId === _.id}
+                                            isOpen={openCardId}
                                             handleToggle={() => handleToggle(_.id)}
                                         />
                                     ))
