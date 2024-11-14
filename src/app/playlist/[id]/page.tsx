@@ -6,6 +6,8 @@ import lottie from "lottie-web";
 import { AppDispatch, RootState } from "@/lib/store";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AddToPlayListModal from "@/components/Modal/AddToPlayListModal";
+import { addQueueList } from "@/lib/features/Player/mediaPlayerSlice";
 type Params = {
   id: number;
 };
@@ -15,20 +17,25 @@ const Playlist = ({ params }: { params: Params }) => {
   const { playlistDetails, loading } = useSelector(
     (state: RootState) => state.playList
   );
+  const { is_playlist } = useSelector(
+    (state: RootState) => state.playlistModal
+  );
   const [openCardId, setOpenCardId] = useState<number | null>(null);
   const animationContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (animationContainer.current) {
-      lottie.loadAnimation({
-        container: animationContainer.current!,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        path: `/assets/lottie/noRecaurd.json?v=${Date.now()}`,
-      }).addEventListener("error", (event) => {
-        console.error("Lottie animation error:", event);
-      });
+      lottie
+        .loadAnimation({
+          container: animationContainer.current!,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+          path: `/assets/lottie/noRecaurd.json?v=${Date.now()}`,
+        })
+        .addEventListener("error", (event) => {
+          console.error("Lottie animation error:", event);
+        });
     }
   }, []);
 
@@ -71,12 +78,19 @@ const Playlist = ({ params }: { params: Params }) => {
   }
   return (
     <AppLayout>
-      
-      <h1 className="text-fontPrimary text-2xl px-10 pt-6">
-        {playlistDetails?.name}
-      </h1>
+      <div className="flex flex-row justify-between items-end">
+        <h1 className="text-fontPrimary text-2xl px-10 pt-6">
+          {playlistDetails?.name}
+        </h1>
+        <h3
+          className="text-fontPrimary font-bold max-lg:text-center underline cursor-pointer mx-5"
+          onClick={()=> dispatch(addQueueList(playlistDetails?.media))}
+        >
+          Add To Queue
+        </h3>
+      </div>
       <div className="flex px-10 pt-6">
-      <div ref={animationContainer}></div>
+        <div ref={animationContainer}></div>
         {playlistDetails?.media.length !== 0 ? (
           <div className="lg:w-full h-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {playlistDetails?.media.map((_, index) => (
@@ -90,11 +104,12 @@ const Playlist = ({ params }: { params: Params }) => {
             ))}
           </div>
         ) : (
-          <div className="flex justify-center align-middle items-center"> 
+          <div className="flex justify-center align-middle items-center">
             <h1 className="text-cyan-50 align-middle">No Record Found</h1>
           </div>
         )}
       </div>
+      <AddToPlayListModal is_playlist={is_playlist} />
     </AppLayout>
   );
 };

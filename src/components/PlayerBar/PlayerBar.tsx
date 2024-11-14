@@ -1,18 +1,18 @@
 "use client";
+
 import {
   addFavourite,
-  removeFavourite,
-} from "@/lib/features/Favourite/favouriteSlice";
-import {
   pauseTrack,
   playNext,
   playPrevious,
+  removeFavourite,
   setCurrentTime,
   setDuration,
   toggleLike,
   togglePlayPause,
   toggleShuffle,
 } from "@/lib/features/Player/mediaPlayerSlice";
+import { openPlaylistModel } from "@/lib/features/PlayList/playListModal";
 import store, { AppDispatch, RootState } from "@/lib/store";
 import { post } from "@/utils/axios";
 import { errorToast, successToast } from "@/utils/toast";
@@ -206,7 +206,9 @@ const PlayerBar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const handleLikeToggle = () => {
-    dispatch(toggleLike(currentTrack.id));
+    currentTrack.is_favorite
+      ? dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" }))
+      : dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" }));
   };
 
   const handleNext = () => {
@@ -220,31 +222,6 @@ const PlayerBar = () => {
     dispatch(toggleShuffle());
   };
 
-  const handleAddToFavorite = () => {
-    dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" }))
-      .unwrap()
-      .then((res) => {
-        successToast("Song added to favorites");
-        setIsDropdownOpen(!isDropdownOpen);
-      })
-      .catch((err) => {
-        errorToast("Song is already in your favorites");
-        setIsDropdownOpen(!isDropdownOpen);
-      });
-  };
-
-  const handleRemoveFromFavorite = () => {
-    dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" }))
-      .unwrap()
-      .then((res) => {
-        successToast("Song added to favorites");
-        setIsDropdownOpen(!isDropdownOpen);
-      })
-      .catch((err) => {
-        errorToast("Song is already in your favorites");
-        setIsDropdownOpen(!isDropdownOpen);
-      });
-  };
   const handleShare = async () => {
     const songUrl = currentTrack.file_path;
     if (navigator.share) {
@@ -384,7 +361,7 @@ const PlayerBar = () => {
             className="text-buttonPrimary text-xl cursor-pointer"
             onClick={handleLikeToggle}
           >
-            {currentTrack.is_like ? <FaHeart /> : <FaRegHeart />}
+            {currentTrack.is_favorite ? <FaHeart /> : <FaRegHeart />}
           </div>
           {isBigScreen && (
             <div className="relative" ref={dotsButtonRef}>
@@ -407,13 +384,29 @@ const PlayerBar = () => {
                   >
                     {token && (
                       <>
-                        <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                        <li
+                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          onClick={() => {
+                            dispatch(
+                              openPlaylistModel({
+                                media_id: currentTrack.id,
+                                is_playlist:
+                                  currentTrack.is_playlist !== null
+                                    ? true
+                                    : false,
+                              })
+                            );
+                          }}
+                        >
                           Add to Playlist
                         </li>
                       </>
                     )}
 
-                    <li className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={handleShare}>
+                    <li
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      onClick={handleShare}
+                    >
                       Share
                     </li>
                   </ul>

@@ -16,7 +16,6 @@ const MyLibrary = () => {
     const playlists = useSelector((state: RootState) => state.playList.playlists);
     const { favoriteSongs } = useSelector((state: RootState) => state.favourite);
     const { media, currentPage } = useSelector((state: RootState) => state.recentlyPlayed);
-
     useEffect(() => {
         const fetchData = async () => {
             try {

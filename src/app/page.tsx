@@ -2,6 +2,7 @@
 import Artists from "@/components/Artists/Artists";
 import Carousel from "@/components/Carousel/carousel";
 import Footer from "@/components/Footer/footer";
+import AddToPlayListModal from "@/components/Modal/AddToPlayListModal";
 import PlayerBar from "@/components/PlayerBar/PlayerBar";
 import Songs from "@/components/Songs/Songs";
 import TopSong from "@/components/SongTab/TopSong";
@@ -48,6 +49,7 @@ export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
   
   const { newRelease, videoSongs, trendingSongs, topArtists, pickYourMode, loading, error } = useSelector((state: RootState) => state.home);
+  const { is_playlist } = useSelector((state: RootState) => state.playlistModal);
 
   useEffect(() => {
     dispatch(fetchHomeData());
@@ -88,6 +90,7 @@ export default function Home() {
         slides={pickYourMode}
         link="pick_your_mode" 
       />
+      <AddToPlayListModal is_playlist={is_playlist}/>
     </AppLayout>
   );
 }

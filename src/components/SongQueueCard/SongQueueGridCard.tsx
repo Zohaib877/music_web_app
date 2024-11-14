@@ -1,8 +1,8 @@
-import { toggleLike } from "@/lib/features/Home/homeSlice";
 import {
-  addQueueList,
   playTrack,
-  addToQueue
+  addToQueue,
+  addFavourite,
+  removeFavourite,
 } from "@/lib/features/Player/mediaPlayerSlice";
 import { MediaItem } from "@/lib/features/Tops/TopsSlice";
 import store, { AppDispatch, RootState } from "@/lib/store";
@@ -15,6 +15,7 @@ import { IoDownloadOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import { useState } from "react";
+import { openPlaylistModel } from "@/lib/features/PlayList/playListModal";
 
 interface SongQueueCardGridProps {
   data: MediaItem;
@@ -22,7 +23,6 @@ interface SongQueueCardGridProps {
   isOpen: number | null;
   handleToggle: () => void;
 }
-
 
 const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
   data,
@@ -32,10 +32,21 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
 }) => {
   const { loading } = useSelector((state: RootState) => state.topMedis);
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
+  const [onPlaylistSelect, setPlaylistSelect] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const options = [
-    { label: "Add to Playlist", action: () => alert("Add to Playlist") },
+    {
+      label:
+        data.is_playlist !== null ? "Remove from playlist" : "Add to Playlist",
+      action: () =>
+        dispatch(
+          openPlaylistModel({
+            media_id: data.id,
+            is_playlist: data.is_playlist !== null ? true : false,
+          })
+        ),
+    },
     { label: "Add to Queue", action: () => dispatch(addToQueue(data)) },
     { label: "Share", action: () => alert("Share") },
   ];
@@ -50,7 +61,9 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
   };
 
   const handleLikeToggle = () => {
-    dispatch(toggleLike(data.id));
+    data.is_favorite
+      ? dispatch(removeFavourite({ mediaId: data.id, type: "song" }))
+      : dispatch(addFavourite({ mediaId: data.id, type: "song" }));
   };
 
   if (loading) {
@@ -132,10 +145,13 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
               </div>
               <div
                 className="text-red-500 text-xl cursor-pointer"
-                onClick={handleLikeToggle}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLikeToggle();
+                }}
                 style={{ zIndex: 1000 }}
               >
-                {data.is_like ? <FaHeart /> : <FaRegHeart />}
+                {data.is_favorite ? <FaHeart /> : <FaRegHeart />}
               </div>
               <div
                 className="relative text-white text-xl cursor-pointer"
@@ -155,7 +171,8 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
               <div
                 key={index}
                 className="px-4 py-2 text-sm text-white hover:bg-gray-600 cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   option.action();
                   handleToggle();
                 }}

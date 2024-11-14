@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  addQueueList,
+  addFavourite,
   playTrack,
+  removeFavourite,
   removeFromQueue,
   toggleLike,
 } from "@/lib/features/Player/mediaPlayerSlice";
@@ -16,11 +17,7 @@ import { IoDownloadOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import AddToPlayListModal from "../Modal/AddToPlayListModal";
-import {
-  addFavourite,
-  removeFavourite,
-} from "@/lib/features/Favourite/favouriteSlice";
-import { errorToast, successToast } from "@/utils/toast";
+import { openPlaylistModel } from "@/lib/features/PlayList/playListModal";
 
 interface SongQueueCardProps {
   item: MediaItem;
@@ -36,10 +33,8 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => state.user.token);
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
-  const router = useRouter();
   const { currentTrack } = useSelector((state: RootState) => state.mediaPlayer);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [onPlaylistSelect, setPlaylistSelect] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handlePlay = () => {
@@ -47,7 +42,9 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
   };
 
   const handleLikeToggle = () => {
-    dispatch(toggleLike(item.id));
+    item.is_favorite
+      ? dispatch(removeFavourite({ mediaId: item.id, type: "song" }))
+      : dispatch(addFavourite({ mediaId: item.id, type: "song" }));
   };
 
   const handleDropdownToggle = () => {
@@ -90,31 +87,6 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
   };
   const handleRemoveFromQueue = (id: any) => {
     dispatch(removeFromQueue(id));
-  };
-  const handleAddToFavorite = () => {
-    dispatch(addFavourite({ mediaId: item.id, type: "song" }))
-      .unwrap()
-      .then((res) => {
-        successToast("Song added to favorites");
-        setDropdownOpen(false);
-      })
-      .catch((err) => {
-        errorToast("Song is already in your favorites");
-        setDropdownOpen(false);
-      });
-  };
-
-  const handleRemoveFromFavorite = () => {
-    dispatch(removeFavourite({ mediaId: item.id, type: "song" }))
-      .unwrap()
-      .then((res) => {
-        successToast("Song removed from favorites");
-        setDropdownOpen(false);
-      })
-      .catch((err) => {
-        errorToast("Song not found in your favorites");
-        setDropdownOpen(false);
-      });
   };
 
   useEffect(() => {
@@ -189,7 +161,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
               className="text-buttonPrimary text-xl cursor-pointer"
               onClick={handleLikeToggle}
             >
-              {item.is_like ? <FaHeart /> : <FaRegHeart />}
+              {item.is_favorite ? <FaHeart /> : <FaRegHeart />}
             </div>
             <div className="relative" ref={dropdownRef}>
               <div
@@ -205,12 +177,19 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
                       <>
                         <li
                           className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            setPlaylistSelect(true);
-                          }}
+                          onClick={() =>
+                            dispatch(
+                              openPlaylistModel({
+                                media_id: item.id,
+                                is_playlist:
+                                  item.is_playlist !== null ? true : false,
+                              })
+                            )
+                          }
                         >
-                          Add to Playlist
+                          {item.is_playlist !== null
+                            ? "Remove from playlist"
+                            : "Add to Playlist"}
                         </li>
                       </>
                     )}
@@ -251,9 +230,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
         </div>
       )}
       <AddToPlayListModal
-        isOpen={onPlaylistSelect}
-        onClose={() => setPlaylistSelect(false)}
-        mediaId={item.id}
+        is_playlist={item.is_playlist !== null ? true : false}
       />
     </div>
   );

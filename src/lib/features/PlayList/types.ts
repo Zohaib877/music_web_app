@@ -22,6 +22,7 @@ export interface AddSongResponse {
     user_id: number;
     created_at: string;
     updated_at: string;
+    cover_image:string;
     media: MediaItem[]; // Make `media` optional
   }
   
@@ -47,6 +48,7 @@ export interface AddSongResponse {
     name: string;
     created_at: string;
     updated_at: string;
+    cover_image:string;
     media: MediaItem[]
   }
 

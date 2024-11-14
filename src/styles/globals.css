@@ -172,7 +172,20 @@ body::after {
     z-index: -10;
   }
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
 /* Slider  */
 
 /* Customizing slick dots */
@@ -231,28 +244,28 @@ body::after {
 
 .slick-slider .slick-prev,
 .slick-slider .slick-next {
-  width: 40px;     /* Adjust width */
-  height: 40px;    /* Adjust height */
-  display: flex;   /* Use flexbox for centering */
+  width: 40px; /* Adjust width */
+  height: 40px; /* Adjust height */
+  display: flex; /* Use flexbox for centering */
   align-items: center;
   justify-content: center;
-  color: #fff;     /* Change color if necessary */
+  color: #fff; /* Change color if necessary */
   background: rgba(0, 0, 0, 0.5); /* Background for visibility */
   border-radius: 50%; /* Make them round */
-  z-index: 10;     /* Ensure arrows are above other elements */
+  z-index: 10; /* Ensure arrows are above other elements */
 }
 
 /* Center arrows vertically */
 .slick-slider .slick-prev {
-  left: 10px;  /* Adjust as needed */
-  display: flex;   /* Use flexbox for centering */
+  left: 10px; /* Adjust as needed */
+  display: flex; /* Use flexbox for centering */
   align-items: center;
   justify-content: center;
 }
 
 .slick-slider .slick-next {
   right: 10px; /* Adjust as needed */
-  display: flex;   /* Use flexbox for centering */
+  display: flex; /* Use flexbox for centering */
   align-items: center;
   justify-content: center;
 }
