@@ -123,7 +123,7 @@ const SongQueueCard: React.FC<SongQueueCardProps> = ({
           />
           <Image
             className="ml-2"
-            src={item.cover_image}
+            src={item.cover_image??""}
             alt="play"
             width={55}
             height={55}

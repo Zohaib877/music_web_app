@@ -194,7 +194,7 @@ const Songs: React.FC<SongsProps> = ({
               onClick={() => handlePlay(item)}
             >
               <Image
-                src={item.cover_image}
+                src={item.cover_image??""}
                 alt={item.title}
                 width={type === types.BANNER ? 450 : isBigScreen ? 200 : 121}
                 height={type === types.BANNER ? 450 : isBigScreen ? 150 : 73}

@@ -215,7 +215,7 @@ const AudioPlayer = () => {
 
       <div className="w-full h-auto flex flex-col justify-items-center items-center px-12 pb-9">
         <Image
-          src={currentTrack.cover_image}
+          src={currentTrack.cover_image??""}
           alt={currentTrack.title}
           width={280}
           height={260}

@@ -83,7 +83,7 @@ const Carousel: React.FC<Props> = ({
               }`}
             >
               <Image
-                src={slide.url}
+                src={slide.url??""}
                 alt={slide.title || `Slide ${index + 1}`}
                 width={isMobile ? 300 : isTablet ? 500 : 500}
                 height={isMobile ? 180 : isTablet ? 300 : 450}

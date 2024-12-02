@@ -14,7 +14,7 @@ const TabContent: React.FC<TabContentProps> = ({ items }) => (
         className="flex flex-col justify-center items-center h-auto w-fit px-4 py-3"
       >
         <Image
-          src={item.src} 
+          src={item.src??""} 
           alt={item.alt} 
           width={250} 
           height={250} 

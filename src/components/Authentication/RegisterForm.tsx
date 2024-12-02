@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Image from "next/image";
 import store from "@/lib/store";
 import { registerUser } from "@/lib/features/Auth/authSlice";
 import { errorToast, successToast } from "@/utils/toast";

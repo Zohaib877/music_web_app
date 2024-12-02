@@ -33,7 +33,7 @@ const SongCard: React.FC<SongCardProps> = ({ items }) => {
                     onClick={()=>handlePlay(item)}
                 >
                     <Image
-                        src={item.cover_image}
+                        src={item.cover_image??""}
                         alt={item.title}
                         width={300}
                         height={300}

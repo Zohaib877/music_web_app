@@ -279,7 +279,7 @@ const PlayerBar = () => {
       <div className="flex justify-between items-center px-2 md:px-3 py-3 lg:py-0">
         <div className="w-1/2 lg:w-2/12 xl:w-2/12 flex justify-start overflow-hidden">
           <Image
-            src={currentTrack.cover_image}
+            src={currentTrack.cover_image??""}
             alt=""
             width={isBigScreen ? 75 : 45}
             height={isBigScreen ? 75 : 45}
