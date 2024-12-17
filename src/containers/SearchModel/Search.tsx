@@ -1,76 +1,72 @@
 "use client";
 import Songs from "@/components/Songs/Songs";
 import { closeSearchModel } from "@/lib/features/Search/searchModelSlice";
-import { RootState } from "@/lib/store";
+import { AppDispatch, RootState } from "@/lib/store";
 import { IoClose, IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { closeSidebar } from "@/lib/features/Sidebar/SidebarSlice";
-
-interface Slide {
-  url: string;
-  title?: string;
-}
-
-const SongSlides: Slide[] = [
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-  {
-    url: "/assets/images/thumbnail/song_mobile.png",
-    title: "Wo Larki Khawab Mere Dekhti Hai",
-  },
-];
+import SearchSong from "@/components/Songs/SearchSong";
+import {
+  fetchSearchResults,
+  setQuery,
+} from "@/lib/features/Search/searchSlice";
 
 const SearchModel = () => {
-  const {trendingSongs} = useSelector((state: RootState) => state.home);
+  const { results, query, pagination, loading } = useSelector(
+    (state: RootState) => state.searchSong
+  );
   const isOpen = useSelector((state: RootState) => state.searchModel.isOpen);
-  const dispatch = useDispatch();
-  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    dispatch(closeSearchModel());
+    dispatch(setQuery(searchQuery));
+    dispatch(fetchSearchResults({ query: searchQuery, page: 1 }));
     setSearchQuery("");
-    router.push("/search");
-    console.log("Search submitted with query:", searchQuery);
   };
 
   useEffect(() => {
     if (isOpen) {
       dispatch(closeSidebar());
     }
-  }, [isOpen, dispatch]);
+  }, [isOpen]);
+
+
+  const shimmer = () => {
+    return (
+      <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly m-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-1 mb-9 w-full">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              role="status"
+              className="flex flex-col items-center justify-center p-4 h-56 w-full bg-gray-300 rounded-lg animate-pulse dark:bg-gray-700"
+            >
+              <svg
+                className="w-16 h-16 text-gray-200 dark:text-gray-600 mb-2"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 16 20"
+              >
+                <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.98 2.98 0 0 0 .13 5H5Z" />
+                <path d="M14.066 0H7v5a2 2 0 0 1-2 2H0v11a1.97 1.97 0 0 0 1.934 2h12.132A1.97 1.97 0 0 0 16 18V2a1.97 1.97 0 0 0-1.934-2ZM9 13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2Zm4 .382a1 1 0 0 1-1.447.894L10 13v-2l1.553-1.276a1 1 0 0 1 1.447.894v2.764Z" />
+              </svg>
+              <div className="flex flex-col justify-end items-center w-full">
+                <div className="w-full h-16 bg-gray-600 rounded mb-3"></div>
+                <div className="w-3/4 h-4 bg-gray-600 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   if (!isOpen) return null;
-
   return (
     <div className="fixed w-full top-0 left-0 right-0 max-sm:h-[350px] max-lg:h-[440px] xl:h-[666px] z-10 bg-sideBarBackground flex flex-col justify-start items-center p-6">
       {/* Top Search */}
@@ -99,7 +95,6 @@ const SearchModel = () => {
             </button>
           </form>
         </div>
-        {/* Close Model */}
         <div
           className="text-fontPrimary flex justify-center items-center font-bold text-5xl cursor-pointer"
           onClick={() => dispatch(closeSearchModel())}
@@ -107,16 +102,13 @@ const SearchModel = () => {
           <IoClose />
         </div>
       </div>
-
-      {/* Top Trending */}
-      <div className="w-full flex flex-col justify-between items-center py-7">
-        {/* Top Trending Heading */}
-        <h1 className="w-full text-fontPrimary text-center font-bold max-md:text-2xl text-3xl">
-          Top Trending
-        </h1>
-
-        <Songs type={0} dot={false} arrow={false} slides={trendingSongs} />
-      </div>
+      {loading ? (
+        shimmer()
+      ) : (
+        <div className="w-full flex flex-col justify-between items-center py-7 m-10">
+          <SearchSong type={0} dot={true} arrow={true} slides={results.slice(0,5)} heading="Search Results"/>
+        </div>
+      )}
     </div>
   );
 };

@@ -15,7 +15,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ items }) => {
                     className="flex flex-col justify-center items-center h-auto w-fit px-4 py-3"
                 >
                     <Image
-                        src={item.image}
+                        src={item.image??""}
                         alt={item.name}
                         width={250}
                         height={250}

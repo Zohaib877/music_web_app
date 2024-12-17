@@ -1,13 +1,14 @@
 "use client";
 
 import {
+  addFavourite,
   pauseTrack,
   playNext,
   playPrevious,
+  removeFavourite,
   setCurrentTime,
   setDuration,
   setVolume,
-  toggleLike,
   toggleMute,
   togglePlayPause,
   toggleShuffle,
@@ -32,9 +33,15 @@ import { useDispatch, useSelector } from "react-redux";
 
 const AudioPlayer = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentTrack, isPlaying, volume, mute, media_duration, currentTime, isShuffled } = useSelector(
-    (state: RootState) => state.mediaPlayer
-  );
+  const {
+    currentTrack,
+    isPlaying,
+    volume,
+    mute,
+    media_duration,
+    currentTime,
+    isShuffled,
+  } = useSelector((state: RootState) => state.mediaPlayer);
   const [track, setTrack] = useState<number>(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -71,7 +78,7 @@ const AudioPlayer = () => {
     }
   }, [currentTrack.file_path, currentTrack.id]);
 
-
+  
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -109,7 +116,7 @@ const AudioPlayer = () => {
       const handleEnded = () => {
         console.log("asassa");
 
-        handleNext()
+        handleNext();
         setTrack(0);
         clearInterval(intervalRef.current!);
         intervalRef.current = null;
@@ -171,8 +178,11 @@ const AudioPlayer = () => {
   };
 
   const handleLikeToggle = () => {
-    dispatch(toggleLike(currentTrack.id));
+    currentTrack.is_favorite
+      ? dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" }))
+      : dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" }));
   };
+
 
   const handleNext = () => {
     dispatch(playNext());
@@ -186,7 +196,9 @@ const AudioPlayer = () => {
     dispatch(toggleShuffle());
   };
   const handleDownload = async () => {
-    const downloadUrl = `/api/download?url=${encodeURIComponent(currentTrack.file_path)}`;
+    const downloadUrl = `/api/download?url=${encodeURIComponent(
+      currentTrack.file_path
+    )}`;
     const link = document.createElement("a");
     link.href = downloadUrl;
     link.download = currentTrack.title;
@@ -203,7 +215,7 @@ const AudioPlayer = () => {
 
       <div className="w-full h-auto flex flex-col justify-items-center items-center px-12 pb-9">
         <Image
-          src={currentTrack.cover_image}
+          src={currentTrack.cover_image??""}
           alt={currentTrack.title}
           width={280}
           height={260}
@@ -211,7 +223,7 @@ const AudioPlayer = () => {
         <h1 className="text-fontPrimary font-bold text-xl pt-6">
           {currentTrack.title}
         </h1>
-        <h1 className="text-fontPrimary font-light text-xs pt-1">
+        <h1 className="text-fontPrimary font-light text-xs pt-1 text-center">
           {currentTrack.description}
         </h1>
       </div>
@@ -247,12 +259,18 @@ const AudioPlayer = () => {
       {/* Player Action Button */}
       <div className="w-full flex flex-row justify-start items-center pb-3">
         <div className="text-fontPrimary text-xl" onClick={handleToggleShuffle}>
-          <BsRepeat size={35} className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"} />
+          <BsRepeat
+            size={35}
+            className={isShuffled ? "text-buttonPrimary" : "text-fontPrimary"}
+          />
         </div>
         <div className="flex-1 w-full py-4">
           <div className="w-full flex justify-center items-center gap-3">
-            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center" onClick={handlePrevious}>
-              <IoPlayBackOutline size={26} />
+            <button
+              className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"
+              onClick={handlePrevious}
+            >
+              <IoPlayBackOutline size={25} />
             </button>
             <button
               className="w-14 h-14 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"
@@ -260,8 +278,11 @@ const AudioPlayer = () => {
             >
               {isPlaying ? <IoPause size={30} /> : <IoPlay size={30} />}
             </button>
-            <button className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center" onClick={handleNext}>
-              <IoPlayForwardOutline size={26} />
+            <button
+              className="w-12 h-12 rounded-full bg-buttonPrimary text-fontPrimary flex justify-center items-center"
+              onClick={handleNext}
+            >
+              <IoPlayForwardOutline size={25} />
             </button>
           </div>
         </div>
@@ -269,7 +290,7 @@ const AudioPlayer = () => {
           className="text-buttonPrimary text-xl cursor-pointer"
           onClick={handleLikeToggle}
         >
-          {currentTrack.is_like ? (
+          {currentTrack.is_favorite ? (
             <FaHeart size={35} />
           ) : (
             <FaRegHeart size={35} />
@@ -304,9 +325,17 @@ const AudioPlayer = () => {
             />
           </div>
         </div>
-        <div className="text-fontPrimary text-xl cursor-pointer" onClick={handleDownload}>
+        <div
+          className="text-fontPrimary text-xl cursor-pointer"
+          onClick={handleDownload}
+        >
           <IoDownloadOutline size={35} />
         </div>
+      </div>
+      <div>
+        <h1 className="text-fontPrimary font-bold text-xl pt-6">Artist: {currentTrack.artist.name}</h1>
+        <h1 className="text-fontPrimary font-bold text-xl pt-6">Language: {currentTrack.language.name}</h1>
+        <h1 className="text-fontPrimary font-bold text-xl pt-6">Category: {currentTrack.category ?? 'empty'}</h1>
       </div>
       <audio
         ref={audioRef}

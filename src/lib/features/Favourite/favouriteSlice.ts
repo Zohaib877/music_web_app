@@ -31,28 +31,28 @@ export const fetchFavoriteSongs = createAsyncThunk(
     }
 );
 
-export const addFavourite = createAsyncThunk(
-    'favourite/toggleFavorite',
-    async ({ mediaId, type }: { mediaId: number; type: string }) => {
-        const response = await get({
-            url: `favorites/${mediaId}/${type}`,
-            includeToken: true,
-        });
-        return { mediaId, success: response.code === 200 };
-    }
-);
+// export const addFavourite = createAsyncThunk(
+//     'favourite/toggleFavorite',
+//     async ({ mediaId, type }: { mediaId: number; type: string }) => {
+//         const response = await get({
+//             url: `favorites/${mediaId}/${type}`,
+//             includeToken: true,
+//         });
+//         return { mediaId, success: response.code === 200 };
+//     }
+// );
 
 
-export const removeFavourite = createAsyncThunk(
-    'favourite/removeFavourite',
-    async ({ mediaId, type }: { mediaId: number; type: string }) => {
-        const response = await get({
-            url: `favorites/remove/${mediaId}/${type}`,
-            includeToken: true,
-        });
-        return { mediaId, success: response.code === 200 };
-    }
-);
+// export const removeFavourite = createAsyncThunk(
+//     'favourite/removeFavourite',
+//     async ({ mediaId, type }: { mediaId: number; type: string }) => {
+//         const response = await get({
+//             url: `favorites/remove/${mediaId}/${type}`,
+//             includeToken: true,
+//         });
+//         return { mediaId, success: response.code === 200 };
+//     }
+// );
 
 
 const favouriteSlice = createSlice({
@@ -73,47 +73,47 @@ const favouriteSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload ? action.payload.join(', ') : null;
             })
-            .addCase(addFavourite.pending, (state) => {
-                state.loading = true;
-                state.messages = [];
-                state.error = null;
-            })
-            .addCase(addFavourite.fulfilled, (state, action: PayloadAction<{ mediaId: number; success: boolean }>) => {
-                state.loading = false;
-                if (action.payload.success) {
-                    const songIndex = state.favoriteSongs.findIndex(song => song.id === action.payload.mediaId);
-                    if (songIndex > -1) {
-                        state.favoriteSongs[songIndex].is_favorite = true;
-                    } else {
-                        // If not already in the list, you may want to add it
-                        // You can fetch the new song's details and add it if needed
-                    }
-                    state.messages.push('Song added to favorites'); // Update messages
-                }
-            })
-            .addCase(addFavourite.rejected, (state, action: PayloadAction<any>) => {
-                state.loading = false;
-                state.error = action.payload ? action.payload.join(', ') : null;
-            })
-            .addCase(removeFavourite.pending, (state) => {
-                state.loading = true;
-                state.messages = [];
-                state.error = null;
-            })
-            .addCase(removeFavourite.fulfilled, (state, action: PayloadAction<{ mediaId: number; success: boolean }>) => {
-                state.loading = false;
-                if (action.payload.success) {
-                    state.favoriteSongs = state.favoriteSongs.filter(song => song.id !== action.payload.mediaId); 
-                    if (action.payload.mediaId) {
-                        store.dispatch(removeFromQueue(action.payload.mediaId));
-                    }
-                    state.messages.push('Song removed from favorites');
-                }
-            })
-            .addCase(removeFavourite.rejected, (state, action: PayloadAction<any>) => {
-                state.loading = false;
-                state.error = action.payload ? action.payload.join(', ') : null;
-            });
+            // .addCase(addFavourite.pending, (state) => {
+            //     state.loading = true;
+            //     state.messages = [];
+            //     state.error = null;
+            // })
+            // .addCase(addFavourite.fulfilled, (state, action: PayloadAction<{ mediaId: number; success: boolean }>) => {
+            //     state.loading = false;
+            //     if (action.payload.success) {
+            //         const songIndex = state.favoriteSongs.findIndex(song => song.id === action.payload.mediaId);
+            //         if (songIndex > -1) {
+            //             state.favoriteSongs[songIndex].is_favorite = true;
+            //         } else {
+            //             // If not already in the list, you may want to add it
+            //             // You can fetch the new song's details and add it if needed
+            //         }
+            //         state.messages.push('Song added to favorites'); // Update messages
+            //     }
+            // })
+            // .addCase(addFavourite.rejected, (state, action: PayloadAction<any>) => {
+            //     state.loading = false;
+            //     state.error = action.payload ? action.payload.join(', ') : null;
+            // })
+            // .addCase(removeFavourite.pending, (state) => {
+            //     state.loading = true;
+            //     state.messages = [];
+            //     state.error = null;
+            // })
+            // .addCase(removeFavourite.fulfilled, (state, action: PayloadAction<{ mediaId: number; success: boolean }>) => {
+            //     state.loading = false;
+            //     if (action.payload.success) {
+            //         state.favoriteSongs = state.favoriteSongs.filter(song => song.id !== action.payload.mediaId); 
+            //         if (action.payload.mediaId) {
+            //             store.dispatch(removeFromQueue(action.payload.mediaId));
+            //         }
+            //         state.messages.push('Song removed from favorites');
+            //     }
+            // })
+            // .addCase(removeFavourite.rejected, (state, action: PayloadAction<any>) => {
+            //     state.loading = false;
+            //     state.error = action.payload ? action.payload.join(', ') : null;
+            // });
     },
 });
 

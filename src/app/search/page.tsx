@@ -1,116 +1,59 @@
 "use client";
 import Artists from "@/components/Artists/Artists";
+import SongQueueGridCard from "@/components/SongQueueCard/SongQueueGridCard";
 import Songs from "@/components/Songs/Songs";
 import AppLayout from "@/containers/layout/AppLayout";
-import { RootState } from "@/lib/store";
-import { useSelector } from "react-redux";
-
-interface Slide {
-    url: string;
-    title?: string;
-}
-
-const SongSlides: Slide[] = [
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/song_mobile.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-];
-const VideoSlides: Slide[] = [
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-    {
-      url: "/assets/images/thumbnail/video_desktop.png",
-      title: "Wo Larki Khawab Mere Dekhti Hai",
-    },
-];
-const ArtistSlides: Slide[] = [
-    {
-      url: "/assets/images/thumbnail/artist_mobile.png",
-      title: "Gul panra",
-    },
-    {
-      url: "/assets/images/thumbnail/artist_mobile.png",
-      title: "Laila Khan",
-    },
-    {
-      url: "/assets/images/thumbnail/artist_mobile.png",
-      title: "Zeeshan Khan",
-    },
-    {
-      url: "/assets/images/thumbnail/artist_mobile.png",
-      title: "Malkoo",
-    },
-    {
-      url: "/assets/images/thumbnail/artist_mobile.png",
-      title: "Shafaullah Khan",
-    },
-    {
-      url: "/assets/images/thumbnail/artist_mobile.png",
-      title: "Atif Aslam",
-    },
-];
+import { fetchSearchResults } from "@/lib/features/Search/searchSlice";
+import { MediaItem } from "@/lib/features/Tops/TopsSlice";
+import { AppDispatch, RootState } from "@/lib/store";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Search = () => {
-  const {trendingSongs, topArtists , media} = useSelector((state: RootState) => state.home);
-    return (
-        <AppLayout>
-            <Songs type={1} heading="Video Songs" slides={media} link={'video_songs'} />
-            <Artists type={0} heading="Top Artists" slides={topArtists} link={'top_artists'} />
-            <Songs type={0} heading="Trending Songs" slides={trendingSongs} link={'trending_songs'} />
-            <Songs type={0} heading="Pick Your Mood" slides={trendingSongs} link={'your_mood'} />
-        </AppLayout>
-    );
-}
+  const dispatch = useDispatch<AppDispatch>();
+  const [openCardId, setOpenCardId] = useState<number | null>(null);
+  const { results, query, pagination, loading } = useSelector(
+    (state: RootState) => state.searchSong
+  );
+
+  const handleNextPage = () => {
+    if (pagination.current_page < pagination.last_page) {
+      dispatch(
+        fetchSearchResults({ query, page: pagination.current_page + 1 })
+      );
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pagination.current_page > 1) {
+      dispatch(
+        fetchSearchResults({ query, page: pagination.current_page - 1 })
+      );
+    }
+  };
+
+  const handleToggle = (id: number) => {
+    setOpenCardId(openCardId === id ? null : id);
+  };
+
+  return (
+    <AppLayout>
+      <h1 className="text-fontPrimary text-2xl px-10 pt-6">Search Results</h1>
+      <div className="flex px-10 pt-6">
+      <div className="lg:w-full h-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {results.map((_, index) => (
+          <SongQueueGridCard
+            key={index + 1}
+            data={_}
+            queue={results}
+            isOpen={openCardId}
+            handleToggle={() => handleToggle(_.id)}
+          />
+        ))}
+      </div>
+      </div>
+    </AppLayout>
+  );
+};
 
 export default Search;

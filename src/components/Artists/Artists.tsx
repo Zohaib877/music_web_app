@@ -186,7 +186,7 @@ const Artists: React.FC<SongsProps> = ({
               onClick={() => handleClick(item)}
             >
               <Image
-                src={item.image}
+                src={item.image??""}
                 alt={item.name}
                 width={type === types.BANNER ? 450 : isBigScreen ? 200 : 121}
                 height={type === types.BANNER ? 450 : isBigScreen ? 200 / ratio : 73}

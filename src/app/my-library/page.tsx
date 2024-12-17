@@ -16,7 +16,6 @@ const MyLibrary = () => {
     const playlists = useSelector((state: RootState) => state.playList.playlists);
     const { favoriteSongs } = useSelector((state: RootState) => state.favourite);
     const { media, currentPage } = useSelector((state: RootState) => state.recentlyPlayed);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,9 +45,9 @@ const MyLibrary = () => {
                         <Link href="#" className="w-fit h-11 px-6 mx-2 flex items-center rounded-3xl bg-buttonPrimary border-buttonPrimary text-white font-medium hover:text-gray-200">
                             Audio
                         </Link>
-                        <Link href="/my-library/video" className="w-fit h-11 px-6 mx-2 flex items-center rounded-3xl bg-buttonDisable border border-buttonPrimary text-white font-medium hover:text-gray-200">
+                        {/* <Link href="/my-library/video" className="w-fit h-11 px-6 mx-2 flex items-center rounded-3xl bg-buttonDisable border border-buttonPrimary text-white font-medium hover:text-gray-200">
                             Video
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
                 <Tabs tabs={tabs} />

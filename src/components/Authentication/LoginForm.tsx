@@ -57,15 +57,15 @@ const LoginForm: React.FC = () => {
   };
   return (
     <>
-      <div className="hidden max-sm:flex flex-col justify-center items-center mt-3">
-        {/* <div className="relative w-40 h-40 sm:w-40 sm:h-40">
+      <div className="hidden max-sm:flex flex-col justify-center items-center mt-3 content-center">
+        <div className="relative w-40 h-40 sm:w-40 sm:h-40">
           <Image
             src={require("../../../public/assets/images/brand/Logo.png")}
             alt="Music App Logo"
             fill
             style={{ objectFit: "contain" }}
           />
-        </div> */}
+        </div>
         <h1 className="text-white text-3xl font-bold mt-14">Welcome To</h1>
         <p className="text-borderPrimary font-light text-xl">Dhun</p>
       </div>
@@ -129,7 +129,7 @@ const LoginForm: React.FC = () => {
             </div>
 
           </div>
-          <div className="flex items-center justify-between my-4 w-full">
+          {/* <div className="flex items-center justify-between my-4 w-full">
             <label className="inline-flex items-center">
               <input
                 type="checkbox"
@@ -143,7 +143,7 @@ const LoginForm: React.FC = () => {
             >
               Forgot Password?
             </Link>
-          </div>
+          </div> */}
           <button
             type="submit"
             disabled={loading}

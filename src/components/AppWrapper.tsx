@@ -10,8 +10,12 @@ const AppWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     const { user, token } = loadUserFromStorage();
+    console.log("user", user);
+    console.log("token", token);
     if (user && token) {
-      dispatch(loginUser({ phoneNumber: user.phone, token, userDetails: user }));
+      dispatch(
+        loginUser({ phoneNumber: user.phone, token, userDetails: user })
+      );
     }
   }, [dispatch]);
 

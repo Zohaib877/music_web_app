@@ -132,8 +132,8 @@ const homeSlice = createSlice({
                     const updateItem = (items: MediaItem[]) => {
                         const item = items.find(media => media.id === mediaId);
                         if (item) {
-                            item.likes += item.likes ? -1 : 1;
-                            item.is_like = !item.is_like;
+                            item.favorite_count += item.favorite_count ? -1 : 1;
+                            item.is_favorite = !item.is_favorite;
                         }
                     };
                     // Update across all categories

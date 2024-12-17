@@ -53,7 +53,7 @@ export const getToken = () => {
 };
 
 export const loadUserFromStorage = () => {
-  const user = getLocalStorageItem({ key: "user" });
+  const user = getLocalStorageItem({ key: "userDetails" });
   const token = getLocalStorageItem({ key: "token" });
   return { user, token };
 };

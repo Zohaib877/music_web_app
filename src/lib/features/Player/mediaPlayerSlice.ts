@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MediaItem } from "../Tops/TopsSlice";
-import { post } from "@/utils/axios";
+import { get, post } from "@/utils/axios";
 
 interface MediaState {
   currentTrack: MediaItem;
@@ -27,9 +27,27 @@ const initialState: MediaState = {
     cover_image: "",
     release_date: "",
     recently_played_count: 0,
-    likes: 0,
+    favorite_count: 0,
     is_favorite: false,
-    is_like: false
+    artist: {
+      bio: "",
+      name: "",
+      id: 0,
+      image: "",
+      is_favorite: false,
+    },
+    category: "",
+    language: {
+      id: 0,
+      name: "",
+    },
+    is_playlist: {
+      created_at: "",
+      id: 0,
+      media_id: 0,
+      playlist_id: 0,
+      updated_at: "",
+    },
   },
   media_duration: "",
   isPlaying: false,
@@ -53,17 +71,41 @@ export const toggleLike = createAsyncThunk(
   }
 );
 
+export const addFavourite = createAsyncThunk(
+  "favourite/toggleFavorite",
+  async ({ mediaId, type }: { mediaId: number; type: string }) => {
+    const response = await get({
+      url: `favorites/${mediaId}/${type}`,
+      includeToken: true,
+    });
+    return { mediaId, success: response.code === 200 };
+  }
+);
+export const removeFavourite = createAsyncThunk(
+  "favourite/removeFavourite",
+  async ({ mediaId, type }: { mediaId: number; type: string }) => {
+    const response = await get({
+      url: `favorites/remove/${mediaId}/${type}`,
+      includeToken: true,
+    });
+    return { mediaId, success: response.code === 200 };
+  }
+);
 
 // Shuffle the queue
-const shuffleQueue = (queue: MediaItem[], currentTrack: MediaItem): MediaItem[] => {
-  const shuffledQueue = [...queue].filter((track) => track.id !== currentTrack.id);
+const shuffleQueue = (
+  queue: MediaItem[],
+  currentTrack: MediaItem
+): MediaItem[] => {
+  const shuffledQueue = [...queue].filter(
+    (track) => track.id !== currentTrack.id
+  );
   for (let i = shuffledQueue.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffledQueue[i], shuffledQueue[j]] = [shuffledQueue[j], shuffledQueue[i]];
   }
   return [currentTrack, ...shuffledQueue];
 };
-
 
 const mediaPlayerSlice = createSlice({
   name: "mediaPlayer",
@@ -100,8 +142,8 @@ const mediaPlayerSlice = createSlice({
       state.queue = action.payload;
     },
     removeFromQueue: (state, action: PayloadAction<number>) => {
-      state.queue = state.queue.filter(track => track.id !== action.payload);
-  },
+      state.queue = state.queue.filter((track) => track.id !== action.payload);
+    },
     clearQueue: (state) => {
       state.queue = [];
     },
@@ -165,15 +207,16 @@ const mediaPlayerSlice = createSlice({
       .addCase(toggleLike.fulfilled, (state, action) => {
         const { mediaId, success } = action.payload;
         if (success && state.currentTrack.id === mediaId) {
-          state.currentTrack.is_like = !state.currentTrack.is_like;
-          state.currentTrack.likes += state.currentTrack.is_like ? 1 : -1;
+          state.currentTrack.is_favorite = !state.currentTrack.is_favorite;
+          state.currentTrack.favorite_count += state.currentTrack.favorite_count
+            ? 1
+            : -1;
         }
 
-        // Find and update the liked song in the queue
         const songInQueue = state.queue.find((track) => track.id === mediaId);
         if (songInQueue) {
-          songInQueue.is_like = !songInQueue.is_like;
-          songInQueue.likes += songInQueue.is_like ? 1 : -1;
+          songInQueue.is_favorite = !songInQueue.is_favorite;
+          songInQueue.favorite_count += songInQueue.is_favorite ? 1 : -1;
         }
 
         state.loading = false;
@@ -182,7 +225,58 @@ const mediaPlayerSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to toggle like";
       })
+      // favorite add
+      .addCase(addFavourite.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addFavourite.fulfilled, (state, action) => {
+        const { mediaId, success } = action.payload;
+        if (success && state.currentTrack.id === mediaId) {
+          state.currentTrack.is_favorite = !state.currentTrack.is_favorite;
+          state.currentTrack.favorite_count += state.currentTrack.favorite_count
+            ? 1
+            : -1;
+        }
 
+        const songInQueue = state.queue.find((track) => track.id === mediaId);
+        if (songInQueue) {
+          songInQueue.is_favorite = !songInQueue.is_favorite;
+          songInQueue.favorite_count += songInQueue.is_favorite ? 1 : -1;
+        }
+
+        state.loading = false;
+      })
+      .addCase(addFavourite.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to toggle like";
+      })
+      // favorite add
+      .addCase(removeFavourite.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeFavourite.fulfilled, (state, action) => {
+        const { mediaId, success } = action.payload;
+        if (success && state.currentTrack.id === mediaId) {
+          state.currentTrack.is_favorite = !state.currentTrack.is_favorite;
+          state.currentTrack.favorite_count += state.currentTrack.favorite_count
+            ? 1
+            : -1;
+        }
+
+        const songInQueue = state.queue.find((track) => track.id === mediaId);
+        if (songInQueue) {
+          songInQueue.is_favorite = !songInQueue.is_favorite;
+          songInQueue.favorite_count += songInQueue.is_favorite ? 1 : -1;
+        }
+
+        state.loading = false;
+      })
+      .addCase(removeFavourite.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to toggle like";
+      });
   },
 });
 

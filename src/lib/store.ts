@@ -11,6 +11,10 @@ import playlistSlice from './features/PlayList/createPlayList';
 import favouriteSlice from './features/Favourite/favouriteSlice';
 import recentlyPlayedSlice from './features/RecentlyPlayed/recentlyPlayedSlice';
 import artistSlice from './features/Artist/artistSlice';
+import searchSlice from './features/Search/searchSlice';
+import languageSlice from './features/language/languageSlice';
+import languageMediaSlice from './features/language/languageMediaSlice';
+import playlistModelSlice from './features/PlayList/playListModal';
 
 const store = configureStore({
   reducer: {
@@ -26,6 +30,11 @@ const store = configureStore({
     favourite: favouriteSlice,
     recentlyPlayed: recentlyPlayedSlice,
     artist: artistSlice,
+    searchSong: searchSlice,
+    languages: languageSlice,
+    languageMedia: languageMediaSlice,
+    playlistModal: playlistModelSlice,
+
   },
 });
 

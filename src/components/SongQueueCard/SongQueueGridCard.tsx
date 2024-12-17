@@ -1,5 +1,9 @@
-import { toggleLike } from "@/lib/features/Home/homeSlice";
-import { addQueueList,  playTrack } from "@/lib/features/Player/mediaPlayerSlice";
+import {
+  playTrack,
+  addToQueue,
+  addFavourite,
+  removeFavourite,
+} from "@/lib/features/Player/mediaPlayerSlice";
 import { MediaItem } from "@/lib/features/Tops/TopsSlice";
 import store, { AppDispatch, RootState } from "@/lib/store";
 import Image from "next/image";
@@ -10,11 +14,13 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoDownloadOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
+import { useState } from "react";
+import { openPlaylistModel } from "@/lib/features/PlayList/playListModal";
 
 interface SongQueueCardGridProps {
   data: MediaItem;
   queue: MediaItem[];
-  isOpen: boolean;
+  isOpen: number | null;
   handleToggle: () => void;
 }
 
@@ -26,10 +32,24 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
 }) => {
   const { loading } = useSelector((state: RootState) => state.topMedis);
   const isBigScreen = useMediaQuery({ minWidth: 1024 });
+  const [onPlaylistSelect, setPlaylistSelect] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  
-
+  const options = [
+    {
+      label:
+        data.is_playlist !== null ? "Remove from playlist" : "Add to Playlist",
+      action: () =>
+        dispatch(
+          openPlaylistModel({
+            media_id: data.id,
+            is_playlist: data.is_playlist !== null ? true : false,
+          })
+        ),
+    },
+    { label: "Add to Queue", action: () => dispatch(addToQueue(data)) },
+    { label: "Share", action: () => alert("Share") },
+  ];
   const handlePlay = () => {
     if (data.type === "audio") {
       router.push(`/player/audio/${data.id}`);
@@ -37,8 +57,15 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
       router.push(`/player/video/${data.id}`);
     }
     store.dispatch(playTrack(data));
-    store.dispatch(addQueueList(queue));
+    // store.dispatch(addQueueList(queue));
   };
+
+  const handleLikeToggle = () => {
+    data.is_favorite
+      ? dispatch(removeFavourite({ mediaId: data.id, type: "song" }))
+      : dispatch(addFavourite({ mediaId: data.id, type: "song" }));
+  };
+
   if (loading) {
     return (
       <div className="animate-pulse relative h-52 rounded-lg shadow-lg bg-gray-700 my-2">
@@ -55,17 +82,14 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
           </div>
         </div>
       </div>
-    )
+    );
   }
-
-  const handleLikeToggle = () => {
-    dispatch(toggleLike(data.id));
-  };
 
   return (
     <div
-      className={`relative h-52 rounded-lg shadow-lg transition-transform transform overflow-hidden ${isOpen ? "bg-gray-800" : "bg-gray-700 cursor-pointer"
-        } hover:scale-105 my-2`}
+      className={`relative h-52 rounded-lg shadow-lg transition-transform transform overflow-hidden ${
+        isOpen ? "bg-gray-800" : "bg-gray-700 cursor-pointer"
+      } hover:scale-105 my-2`}
       style={{
         backgroundImage: `url(${data.cover_image})`,
         backgroundSize: "cover",
@@ -83,7 +107,6 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
             alt="play"
             width={35}
             height={35}
-            onClick={handlePlay}
           />
           <p className="text-white font-semibold text-xs">{data.duration}</p>
         </div>
@@ -104,7 +127,13 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
           </div>
           {!isBigScreen ? (
             <div className="flex flex-col justify-between items-center h-full w-3/12">
-              <div className="text-white cursor-pointer" onClick={handleToggle}>
+              <div
+                className="text-white cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggle();
+                }}
+              >
                 <IoIosArrowDown width={30} />
               </div>
               <p className="text-gray-300 font-thin text-xs">05:23</p>
@@ -114,26 +143,43 @@ const SongQueueGridCard: React.FC<SongQueueCardGridProps> = ({
               <div className="text-white text-xl">
                 <IoDownloadOutline />
               </div>
-              <div className="text-red-500 text-xl cursor-pointer" onClick={handleLikeToggle} style={{zIndex: 1000}}> 
-                {data.is_like ? <FaHeart /> : <FaRegHeart />}
+              <div
+                className="text-red-500 text-xl cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLikeToggle();
+                }}
+                style={{ zIndex: 1000 }}
+              >
+                {data.is_favorite ? <FaHeart /> : <FaRegHeart />}
               </div>
-              {/* <div className="text-white text-xl">
+              <div
+                className="relative text-white text-xl cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggle();
+                }}
+              >
                 <HiOutlineDotsVertical />
-              </div> */}
+              </div>
             </div>
           )}
         </div>
-        {isOpen && (
-          <div className="flex justify-evenly items-center w-full pt-3 gap-2">
-            <div className="text-white text-xl">
-              <IoDownloadOutline />
-            </div>
-            <div className="text-red-500 text-xl">
-              <FaHeart />
-            </div>
-            {/* <div className="text-white text-xl">
-              <HiOutlineDotsVertical />
-            </div> */}
+        {isOpen === data.id && (
+          <div className="absolute right-0 mt-2 w-40 bg-gray-800 rounded-lg shadow-lg ">
+            {options.map((option, index) => (
+              <div
+                key={index}
+                className="px-4 py-2 text-sm text-white hover:bg-gray-600 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  option.action();
+                  handleToggle();
+                }}
+              >
+                {option.label}
+              </div>
+            ))}
           </div>
         )}
       </div>

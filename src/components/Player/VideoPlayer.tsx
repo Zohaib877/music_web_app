@@ -31,9 +31,9 @@ const VideoPlayer = () => {
                     {/* Heart */}
                     <div className="flex flex-row items-center gap-2 w-max text-nowrap">
                         <div className="text-buttonPrimary text-xl cursor-pointer" onClick={handleLikeToggle}>
-                        {currentTrack.is_like ? <FaHeart/> : <FaRegHeart />}
+                        {currentTrack.is_favorite ? <FaHeart/> : <FaRegHeart />}
                         </div>
-                        <p className="text-fontPrimary font-normal text-base">{currentTrack.likes} likes</p>
+                        <p className="text-fontPrimary font-normal text-base">{currentTrack.favorite_count} likes</p>
                     </div>
                     {/* View */}
                     <div className="flex flex-row items-center gap-1 w-max text-nowrap">

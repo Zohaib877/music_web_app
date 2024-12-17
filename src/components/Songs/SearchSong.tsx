@@ -102,7 +102,7 @@ interface SongsProps {
   slides: MediaItem[];
 }
 
-const Songs: React.FC<SongsProps> = ({
+const SearchSong: React.FC<SongsProps> = ({
   type,
   heading,
   link,
@@ -123,59 +123,19 @@ const Songs: React.FC<SongsProps> = ({
       router.push(`/player/video/${data.id}`);
     }
     store.dispatch(playTrack(data));
-    store.dispatch(addQueueList(slides));
   };
-  if (loading) {
-    return (
-      <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly">
-        {heading && (
-          <div className="flex justify-between items-center px-4 mb-6">
-            <div className="bg-gray-600 animate-pulse h-8 w-1/5 rounded"></div>
-            <div className="bg-gray-600 animate-pulse h-8 w-24 rounded"></div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-1 mb-9 w-full">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              role="status"
-              className="flex flex-col items-center justify-center p-4 h-56 w-full bg-gray-300 rounded-lg animate-pulse dark:bg-gray-700"
-            >
-              <svg
-                className="w-16 h-16 text-gray-200 dark:text-gray-600 mb-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 16 20"
-              >
-                <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.98 2.98 0 0 0 .13 5H5Z" />
-                <path d="M14.066 0H7v5a2 2 0 0 1-2 2H0v11a1.97 1.97 0 0 0 1.934 2h12.132A1.97 1.97 0 0 0 16 18V2a1.97 1.97 0 0 0-1.934-2ZM9 13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2Zm4 .382a1 1 0 0 1-1.447.894L10 13v-2l1.553-1.276a1 1 0 0 1 1.447.894v2.764Z" />
-              </svg>
-              <div className="flex flex-col justify-end items-center w-full">
-                <div className="w-full h-16 bg-gray-600 rounded mb-3"></div>
-                <div className="w-3/4 h-4 bg-gray-600 rounded"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full h-auto px-4 lg:px-11 xl:px-11 flex flex-col justify-evenly">
-      {heading && (
-        <div className="flex justify-between items-center px-4">
+       {heading && (
+        <div className="flex justify-between items-center px-4 mb-5">
           <h3 className={`text-fontPrimary text-2xl`}>{heading}</h3>
-          {link && (
-            <Link
-              href={`/song/${link}`}
+          <Link
+              href={`/search`}
               className="w-fit items-center justify-center px-4 lg:px-8 xl:px-8 mx-2 rounded-3xl bg-buttonPrimary border border-btnGradientFrom text-white font-medium hover:font-bold"
             >
               View All
             </Link>
-          )}
         </div>
       )}
 
@@ -226,4 +186,4 @@ const Songs: React.FC<SongsProps> = ({
   );
 };
 
-export default Songs;
+export default SearchSong;

@@ -13,7 +13,7 @@ const TopSong = () => {
 
   const { audio, video, movie, loading, error } = useSelector((state: RootState) => state.topMedis);
 
-  const [openCardId, setOpenCardId] = useState<Number | null>(null);
+  const [openCardId, setOpenCardId] = useState<number | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isVideoSelected, setIsVideoSelected] = useState(false); // State to track selection
 
@@ -69,7 +69,7 @@ const TopSong = () => {
                   key={index + 1}
                   data={_}
                   queue={slides}
-                  isOpen={openCardId === _.id}
+                  isOpen={openCardId}
                   handleToggle={() => handleToggle(_.id)}
                 />
               ))
